@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Reels Preview — Генератор превью из видео</title>
+  <style>
+    :root {
+      --bg-page: #ffffff;
+      --bg-secondary: #f9fafb;
+      --bg-hover: #f3f4f6;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border: #e5e7eb;
+      --border-focus: #2563eb;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: #eff6ff;
+      --success: #059669;
+      --warning-bg: #fffbeb;
+      --warning-border: #fcd34d;
+      --warning-text: #92400e;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --font-ui: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    header {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .logo {
+      font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
+      display: flex; align-items: center; gap: 6px; text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+
+    .hero { text-align: center; padding: 48px 0 24px; }
+    .hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .hero p { font-size: 1rem; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
+
+    .tool-card {
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 40px;
+    }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .tab {
+      padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-page); color: var(--text-secondary); cursor: pointer;
+      font-size: 0.875rem; font-weight: 500; transition: all 0.15s ease;
+    }
+    .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .tab.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+    .input-group { display: none; margin-bottom: 20px; }
+    .input-group.active { display: block; }
+    .input-row { display: flex; gap: 10px; }
+    .input-field {
+      flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 0.9rem; color: var(--text-primary); background: var(--bg-page);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: var(--font-mono);
+    }
+    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .input-field::placeholder { color: var(--text-muted); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 16px; border: none; border-radius: var(--radius);
+      font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px;
+      text-align: center; cursor: pointer; transition: all 0.15s; background: var(--bg-secondary);
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-light); }
+    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-zone p { color: var(--text-secondary); font-size: 0.9rem; }
+    .drop-zone .hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .file-info { margin-top: 8px; font-size: 0.8rem; color: var(--success); font-family: var(--font-mono); }
+    .cors-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; text-align: center; }
+
+    .preview-area { display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+    .preview-area.visible { display: block; }
+    .video-wrapper {
+      position: relative; background: #000; border-radius: var(--radius);
+      overflow: hidden; aspect-ratio: 16/9; margin-bottom: 16px;
+    }
+    .video-wrapper video, .video-wrapper iframe { width: 100%; height: 100%; display: block; }
+    
+    .warning-box {
+      background: var(--warning-bg); border: 1px solid var(--warning-border);
+      color: var(--warning-text); padding: 10px 14px; border-radius: 8px;
+      font-size: 0.825rem; margin-bottom: 16px; display: none; align-items: center; gap: 6px;
+    }
+    .warning-box.visible { display: flex; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .time-control {
+      display: flex; align-items: center; gap: 8px; background: var(--bg-secondary);
+      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .time-control input[type="range"] { width: 110px; accent-color: var(--accent); cursor: pointer; }
+    .time-label { font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-mono); min-width: 90px; }
+    .format-select {
+      padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-page); color: var(--text-primary); font-size: 0.825rem;
+      outline: none; cursor: pointer;
+    }
+
+    .result-area { display: none; margin-top: 24px; }
+    .result-area.visible { display: block; }
+    
+    .result-container { max-width: 520px; margin: 0 auto; }
+    .result-wrapper { 
+      position: relative; width: 100%; background: var(--bg-secondary); 
+      border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); 
+    }
+    .result-img { width: 100%; height: auto; display: block; }
+    
+    .text-overlay { position: absolute; inset: 0; cursor: crosshair; }
+    .text-overlay.disabled { pointer-events: none; cursor: default; }
+    
+    .text-box {
+      position: absolute; padding: 6px 10px;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);
+      border-radius: 6px; color: #fff; font-family: var(--font-ui);
+      cursor: move; user-select: none; -webkit-user-select: none;
+      border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s;
+      line-height: 1.25;
+    }
+    .text-box:hover { border-color: rgba(255,255,255,0.6); }
+    .text-box.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }
+    .text-box.editing { cursor: text !important; user-select: text !important; -webkit-user-select: text !important; background: rgba(0,0,0,0.65); }
+    .text-box.editing .resize-handle { display: none; }
+    
+    .tb-text {
+      display: block; min-width: 1em; min-height: 1.2em; outline: none;
+      white-space: pre-wrap; word-break: break-word; vertical-align: top;
+    }
+    
+    .resize-handle {
+      position: absolute; bottom: -6px; right: -6px; width: 14px; height: 14px;
+      background: var(--accent); border: 2px solid #fff; border-radius: 50%;
+      cursor: nwse-resize; display: none;
+    }
+    .text-box.selected .resize-handle { display: block; }
+
+    .text-toolbar {
+      display: none; flex-wrap: wrap; gap: 10px; align-items: center;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      padding: 10px 14px; border-radius: var(--radius); margin-top: 12px;
+    }
+    .text-toolbar.visible { display: flex; }
+    .text-toolbar label { display: flex; align-items: center; gap: 6px; font-size: 0.825rem; color: var(--text-secondary); }
+    .text-toolbar input[type="color"] { width: 28px; height: 28px; padding: 0; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: none; }
+    .text-toolbar select, .text-toolbar input[type="range"] { accent-color: var(--accent); cursor: pointer; }
+    .edit-hint { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
+
+    .result-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .meta { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; font-family: var(--font-mono); }
+
+    footer { text-align: center; padding: 32px 0; color: var(--text-muted); font-size: 0.825rem; border-top: 1px solid var(--border); }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--bg-page); border: 1px solid var(--border); padding: 10px 14px;
+      border-radius: 10px; box-shadow: var(--shadow-md); font-size: 0.85rem;
+      display: flex; align-items: center; gap: 8px; animation: slideIn 0.25s ease;
+    }
+    .toast.success { border-left: 3px solid var(--success); }
+    .toast.error { border-left: 3px solid #dc2626; }
+    .toast.info { border-left: 3px solid var(--accent); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.6rem; }
+      .input-row { flex-direction: column; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .time-control input[type="range"] { width: 100%; }
+      .result-actions, .text-toolbar { flex-direction: column; align-items: stretch; }
+      .meta, .edit-hint { margin-left: 0; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="#" class="logo">Video <span>Reels Preview</span></a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Генератор превью из видео</h1>
+      <p>Вставьте ссылку на видео или загрузите файл — и получите превью-изображение в один клик.</p>
+    </section>
+
+    <div class="tool-card">
+      <div class="tabs">
+        <button class="tab active" data-src="auto" onclick="switchTab('auto')">🔍 Авто</button>
+        <button class="tab" data-src="youtube" onclick="switchTab('youtube')">▶ YouTube</button>
+        <button class="tab" data-src="rutube" onclick="switchTab('rutube')">▶ Rutube</button>
+        <button class="tab" data-src="file" onclick="switchTab('file')">▶ MP4 / WebM</button>
+      </div>
+
+      <div class="input-group active" id="grp-auto">
+        <div class="input-row">
+          <input type="text" class="input-field" id="auto-url" placeholder="Вставьте ссылку (YouTube, Rutube, прямой файл)..." oninput="validateAuto()">
+          <button class="btn btn-primary" id="btn-auto" onclick="loadAuto()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+        <div class="cors-hint">Система автоматически определит тип источника.</div>
+      </div>
+
+      <div class="input-group" id="grp-youtube">
+        <div class="input-row">
+          <input type="text" class="input-field" id="yt-url" placeholder="https://www.youtube.com/watch?v=... или https://youtu.be/..." oninput="validateYt()">
+          <button class="btn btn-primary" id="btn-yt" onclick="loadYt()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+      </div>
+
+      <div class="input-group" id="grp-rutube">
+        <div class="input-row">
+          <input type="text" class="input-field" id="rt-url" placeholder="https://rutube.ru/video/..." oninput="validateRt()">
+          <button class="btn btn-primary" id="btn-rt" onclick="loadRt()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+      </div>
+
+      <div class="input-group" id="grp-file">
+        <div class="input-row" style="margin-bottom: 12px;">
+          <input type="text" class="input-field" id="mp4-url" placeholder="https://example.com/video.mp4 (прямая ссылка)" oninput="validateMp4Url()">
+          <button class="btn btn-primary" id="btn-mp4-url" onclick="loadMp4Url()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+        <div class="cors-hint">⚠ Сервер с видео должен поддерживать CORS для захвата кадра</div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 8px 0;">или загрузите файл</div>
+        <div class="drop-zone" id="dropzone">
+          <p>🎬 Перетащите файл сюда или нажмите для выбора</p>
+          <p class="hint">MP4, WebM, MOV, AVI...</p>
+          <input type="file" id="file-input" accept="video/*" onchange="handleFile(this.files[0])">
+        </div>
+        <div class="file-info" id="file-info"></div>
+      </div>
+
+      <div class="preview-area" id="preview-area">
+        <div class="warning-box" id="rt-warning">⚠ Захват кадра из встроенного плеера Rutube недоступен в браузере. Доступна загрузка превью-изображения.</div>
+        <div class="video-wrapper" id="video-wrapper">
+          <video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>
+        </div>
+        <div class="controls" id="video-controls">
+          <div class="time-control">
+            <span class="time-label" id="time-display">0:00 / 0:00</span>
+            <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1" oninput="seek(this.value)">
+          </div>
+          <select class="format-select" id="fmt">
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG 90%</option>
+            <option value="webp">WebP</option>
+          </select>
+          <button class="btn btn-primary" id="btn-capture" onclick="capture()">📸 Снять кадр</button>
+        </div>
+      </div>
+
+      <div class="result-area" id="result-area">
+        <div class="result-container">
+          <div class="result-wrapper" id="result-wrapper">
+            <img id="result-img" class="result-img" alt="Превью">
+            <div id="text-overlay" class="text-overlay disabled"></div>
+          </div>
+          
+          <div class="result-actions">
+            <button class="btn btn-secondary" id="btn-text-mode" onclick="toggleTextMode()">✏️ Текст</button>
+            <button class="btn btn-primary" onclick="download()">⬇ Скачать</button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Копировать</button>
+            <span class="meta" id="res-meta"></span>
+          </div>
+
+          <div class="text-toolbar" id="text-toolbar">
+            <label>Цвет: <input type="color" id="txt-color" value="#ffffff" onchange="applyTextStyle()"></label>
+            <label>Жирность:
+              <select id="txt-weight" onchange="applyTextStyle()">
+                <option value="400">Обычный</option>
+                <option value="600">Полужирный</option>
+                <option value="700">Жирный</option>
+                <option value="900">Сверхжирный</option>
+              </select>
+            </label>
+            <label>Размер: <input type="range" id="txt-size" min="12" max="150" value="32" oninput="applyTextStyle()"></label>
+            <button class="btn btn-danger btn-sm" onclick="deleteSelectedText()">🗑 Удалить</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearAllText()">🧹 Очистить всё</button>
+            <span class="edit-hint">💡 Двойной клик — редактирование. Enter — сохранить.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Video Reels Preview — Всё обрабатывается локально в браузере. Файлы не отправляются на сервер.</p>
+      <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">
+        ⚠ Примечание: Прямой захват кадров из сторонних iframe (Kinescope, Vimeo и др.) невозможен из-за ограничений безопасности браузера (CORS). Используйте прямые ссылки на файлы или локальные видео.
+      </p>
+    </div>
+  </footer>
+
+  <canvas id="cvs" style="display:none"></canvas>
+  <div class="toast-container" id="toasts"></div>
+
+  <script>
+    let srcType = 'auto';
+    let ytId = null, rtId = null;
+    let duration = 0;
+    let baseImage = new Image();
+    
+    const wrapper = document.getElementById('video-wrapper');
+    const previewArea = document.getElementById('preview-area');
+    const resultArea = document.getElementById('result-area');
+    const resultImg = document.getElementById('result-img');
+    const resMeta = document.getElementById('res-meta');
+    const rtWarning = document.getElementById('rt-warning');
+    const canvas = document.getElementById('cvs');
+    const slider = document.getElementById('time-slider');
+    const timeDisp = document.getElementById('time-display');
+    const overlay = document.getElementById('text-overlay');
+    const toolbar = document.getElementById('text-toolbar');
+    const btnTextMode = document.getElementById('btn-text-mode');
+    const videoControls = document.getElementById('video-controls');
+    const btnCapture = document.getElementById('btn-capture');
+
+    let textElements = [];
+    let selectedId = null;
+    let isTextMode = false;
+    let nextId = 1;
+
+    function getPlayer() { return document.getElementById('player'); }
+
+    function switchTab(type) {
+      srcType = type;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.src === type));
+      document.querySelectorAll('.input-group').forEach(g => g.classList.remove('active'));
+      document.getElementById(`grp-${type}`).classList.add('active');
+      previewArea.classList.remove('visible');
+      resultArea.classList.remove('visible');
+      rtWarning.classList.remove('visible');
+      clearTextOverlay();
+      
+      document.getElementById('mp4-url').value = '';
+      document.getElementById('btn-mp4-url').disabled = true;
+      document.getElementById('file-info').textContent = '';
+      document.getElementById('auto-url').value = '';
+      document.getElementById('btn-auto').disabled = true;
+      
+      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
+      videoControls.style.display = 'flex';
+      btnCapture.style.display = 'inline-flex';
+    }
+
+    function toast(msg, type='info') {
+      const c = document.getElementById('toasts');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      const icons = {success:'✅', error:'❌', info:'ℹ️'};
+      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all .25s';setTimeout(()=>t.remove(),250)},3000);
+    }
+
+    function fmtTime(s) { const m=Math.floor(s/60); return `${m}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
+
+    /* ===== AUTO DETECTION ===== */
+    function validateAuto() { document.getElementById('btn-auto').disabled = !document.getElementById('auto-url').value.trim(); }
+    function detectSourceType(input) {
+      const clean = input.trim();
+      if (clean.match(/\.(mp4|webm|mov|ogg|m3u8)(\?.*)?$/i)) return 'direct';
+      if (clean.match(/youtube\.com|youtu\.be/)) return 'youtube';
+      if (clean.match(/rutube\.ru/)) return 'rutube';
+      return 'unknown';
+    }
+    function loadAuto() {
+      const input = document.getElementById('auto-url').value.trim();
+      const type = detectSourceType(input);
+      if (type === 'youtube') { switchTab('youtube'); document.getElementById('yt-url').value = input; loadYt(); }
+      else if (type === 'rutube') { switchTab('rutube'); document.getElementById('rt-url').value = input; loadRt(); }
+      else if (type === 'direct') { switchTab('file'); document.getElementById('mp4-url').value = input; loadMp4Url(); }
+      else { toast('Не удалось определить тип ссылки. Выберите вкладку вручную.', 'error'); }
+    }
+
+    /* ===== YOUTUBE ===== */
+    function extractYtId(u) { const m = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
+    function validateYt() { document.getElementById('btn-yt').disabled = !extractYtId(document.getElementById('yt-url').value); }
+    function loadYt() {
+      ytId = extractYtId(document.getElementById('yt-url').value);
+      if(!ytId) return toast('Неверная ссылка YouTube','error');
+      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
+      previewArea.classList.add('visible');
+      rtWarning.classList.remove('visible');
+      videoControls.style.display = 'none';
+      toast('YouTube видео загружено','success');
+    }
+
+    /* ===== RUTUBE ===== */
+    function extractRtId(u) { const m = u.match(/rutube\.ru\/video\/([a-zA-Z0-9]+)/); return m ? m[1] : null; }
+    function validateRt() { document.getElementById('btn-rt').disabled = !extractRtId(document.getElementById('rt-url').value); }
+    function loadRt() {
+      rtId = extractRtId(document.getElementById('rt-url').value);
+      if(!rtId) return toast('Неверная ссылка Rutube','error');
+      wrapper.innerHTML = `<iframe src="https://rutube.ru/play/embed/${rtId}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
+      previewArea.classList.add('visible');
+      rtWarning.classList.add('visible');
+      videoControls.style.display = 'none';
+      toast('Rutube видео загружено','success');
+    }
+
+    /* ===== DIRECT FILE / MP4 ===== */
+    function validateMp4Url() { document.getElementById('btn-mp4-url').disabled = !document.getElementById('mp4-url').value.trim(); }
+    function loadMp4Url() {
+      const url = document.getElementById('mp4-url').value.trim();
+      if (!url) return toast('Введите ссылку на видео', 'error');
+      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
+      getPlayer().src = url;
+      previewArea.classList.add('visible');
+      rtWarning.classList.remove('visible');
+      videoControls.style.display = 'flex';
+      btnCapture.style.display = 'inline-flex';
+      clearTextOverlay();
+      toast('Загрузка видео по ссылке...', 'info');
+    }
+    function onVideoError() { toast('Ошибка загрузки видео. Проверьте ссылку или CORS.', 'error'); }
+
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+    function handleFile(f) {
+      if(!f || !f.type.startsWith('video/')) return toast('Выберите видеофайл','error');
+      document.getElementById('file-info').textContent = `📎 ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`;
+      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
+      getPlayer().src = URL.createObjectURL(f);
+      previewArea.classList.add('visible');
+      rtWarning.classList.remove('visible');
+      videoControls.style.display = 'flex';
+      btnCapture.style.display = 'inline-flex';
+      clearTextOverlay();
+      toast('Файл загружен','success');
+    }
+
+    function onMeta() { duration = getPlayer().duration; slider.max = duration; slider.value = 0; timeDisp.textContent = `0:00 / ${fmtTime(duration)}`; }
+    function onTime() { if(duration>0) { slider.value = getPlayer().currentTime; timeDisp.textContent = `${fmtTime(getPlayer().currentTime)} / ${fmtTime(duration)}`; } }
+    function seek(v) { getPlayer().currentTime = parseFloat(v); timeDisp.textContent = `${fmtTime(v)} / ${fmtTime(duration)}`; }
+
+    /* ===== CAPTURE ===== */
+    function capture() {
+      const p = getPlayer();
+      if(srcType === 'file' && p.src && p.videoWidth) {
+        canvas.width = p.videoWidth; canvas.height = p.videoHeight;
+        canvas.getContext('2d').drawImage(p, 0, 0);
+        finalizeCapture();
+      } else if(srcType === 'youtube' && ytId) {
+        const img = new Image(); img.crossOrigin='anonymous';
+        img.onload = () => {
+          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+          canvas.getContext('2d').drawImage(img,0,0);
+          finalizeCapture();
+        };
+        img.onerror = () => toast('Не удалось загрузить превью YouTube','error');
+        img.src = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+      } else {
+        toast('Загрузите MP4 файл/ссылку или используйте YouTube','info');
+      }
+    }
+
+    function finalizeCapture() {
+      const fmt = document.getElementById('fmt').value;
+      const mime = fmt==='jpeg' ? 'image/jpeg' : fmt==='webp' ? 'image/webp' : 'image/png';
+      const quality = fmt==='jpeg' ? 0.9 : 0.92;
+      canvas.toBlob(blob => {
+        baseImage.src = URL.createObjectURL(blob);
+        resultImg.src = baseImage.src;
+        resMeta.textContent = `${canvas.width}×${canvas.height} • ${fmt.toUpperCase()}`;
+        resultArea.classList.add('visible');
+        clearTextOverlay();
+        resultArea.scrollIntoView({behavior:'smooth', block:'center'});
+        toast('Кадр захвачен. Добавьте текст или скачайте.','success');
+      }, mime, quality);
+    }
+
+    /* ===== TEXT OVERLAY ===== */
+    function toggleTextMode() {
+      isTextMode = !isTextMode;
+      overlay.classList.toggle('disabled', !isTextMode);
+      btnTextMode.classList.toggle('btn-primary', isTextMode);
+      btnTextMode.classList.toggle('btn-secondary', !isTextMode);
+      btnTextMode.textContent = isTextMode ? '✏️ Режим текста (вкл)' : '✏️ Текст';
+      if(!isTextMode) deselectText();
+      toast(isTextMode ? 'Кликните по изображению, чтобы добавить текст' : 'Режим текста выключен', 'info');
+    }
+
+    overlay.addEventListener('click', (e) => {
+      if(!isTextMode || e.target !== overlay) return;
+      const rect = overlay.getBoundingClientRect();
+      createTextBox(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    function createTextBox(x, y) {
+      const id = nextId++;
+      const el = document.createElement('div');
+      el.className = 'text-box';
+      el.id = `tb-${id}`;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.fontSize = '32px';
+      el.style.fontWeight = '700';
+      el.style.color = '#ffffff';
+      
+      const span = document.createElement('div');
+      span.className = 'tb-text';
+      span.textContent = 'Текст';
+      el.appendChild(span);
+
+      const handle = document.createElement('div');
+      handle.className = 'resize-handle';
+      el.appendChild(handle);
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!el.classList.contains('editing')) selectText(id);
+      });
+
+      el.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        startEditing(id, el, span);
+      });
+
+      el.addEventListener('mousedown', (e) => {
+        if (e.target === handle) { startResize(e, id); return; }
+        if (el.classList.contains('editing')) return;
+        startDrag(e, id);
+      });
+
+      overlay.appendChild(el);
+      textElements.push({ id, x, y, text: 'Текст', fontSize: 32, fontWeight: '700', color: '#ffffff' });
+      selectText(id);
+    }
+
+    function startEditing(id, el, span) {
+      deselectText();
+      selectedId = id;
+      el.classList.add('selected', 'editing');
+      span.contentEditable = true;
+      span.focus();
+      
+      const range = document.createRange();
+      range.selectNodeContents(span);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      
+      toolbar.classList.add('visible');
+
+      span.onblur = () => {
+        span.contentEditable = false;
+        el.classList.remove('editing');
+        if (!span.textContent.trim()) span.textContent = 'Текст';
+        updateElementData(id, el, span);
+      };
+
+      span.onkeydown = (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          span.blur();
+        }
+      };
+    }
+
+    function selectText(id) {
+      deselectText();
+      selectedId = id;
+      const el = document.getElementById(`tb-${id}`);
+      if(el) el.classList.add('selected');
+      const data = textElements.find(t => t.id === id);
+      if(data) {
+        document.getElementById('txt-color').value = data.color;
+        document.getElementById('txt-weight').value = data.fontWeight;
+        document.getElementById('txt-size').value = data.fontSize;
+      }
+      toolbar.classList.add('visible');
+    }
+
+    function deselectText() {
+      if(selectedId) {
+        const el = document.getElementById(`tb-${selectedId}`);
+        if(el) el.classList.remove('selected');
+      }
+      selectedId = null;
+      toolbar.classList.remove('visible');
+    }
+
+    function applyTextStyle() {
+      if(!selectedId) return;
+      const el = document.getElementById(`tb-${selectedId}`);
+      const data = textElements.find(t => t.id === selectedId);
+      if(!el || !data) return;
+
+      data.color = document.getElementById('txt-color').value;
+      data.fontWeight = document.getElementById('txt-weight').value;
+      data.fontSize = parseInt(document.getElementById('txt-size').value);
+
+      el.style.color = data.color;
+      el.style.fontWeight = data.fontWeight;
+      el.style.fontSize = `${data.fontSize}px`;
+    }
+
+    function deleteSelectedText() {
+      if (!selectedId) return toast('Сначала выделите текст кликом', 'info');
+      const el = document.getElementById(`tb-${selectedId}`);
+      if (el) el.remove();
+      textElements = textElements.filter(t => t.id !== selectedId);
+      deselectText();
+      toast('Текст удалён', 'success');
+    }
+
+    function clearAllText() {
+      overlay.innerHTML = '';
+      textElements = [];
+      deselectText();
+      toast('Все тексты удалены', 'success');
+    }
+
+    function clearTextOverlay() {
+      overlay.innerHTML = '';
+      textElements = [];
+      selectedId = null;
+      toolbar.classList.remove('visible');
+      isTextMode = false;
+      overlay.classList.add('disabled');
+      btnTextMode.classList.remove('btn-primary');
+      btnTextMode.classList.add('btn-secondary');
+      btnTextMode.textContent = '✏️ Текст';
+    }
+
+    function updateElementData(id, el, span) {
+      const data = textElements.find(t => t.id === id);
+      if(data) {
+        data.text = span.textContent.trim() || 'Текст';
+        data.x = parseInt(el.style.left);
+        data.y = parseInt(el.style.top);
+      }
+    }
+
+    /* Drag & Resize */
+    let dragState = null;
+    document.addEventListener('mousemove', (e) => {
+      if(!dragState) return;
+      e.preventDefault();
+      const el = document.getElementById(`tb-${dragState.id}`);
+      if(!el) return;
+
+      if(dragState.type === 'move') {
+        const nx = dragState.startX + (e.clientX - dragState.mouseX);
+        const ny = dragState.startY + (e.clientY - dragState.mouseY);
+        el.style.left = `${Math.max(0, nx)}px`;
+        el.style.top = `${Math.max(0, ny)}px`;
+      } else if(dragState.type === 'resize') {
+        const delta = (e.clientX - dragState.mouseX + e.clientY - dragState.mouseY) / 2;
+        const newSize = Math.max(12, Math.min(150, dragState.startSize + delta));
+        el.style.fontSize = `${newSize}px`;
+        const data = textElements.find(t => t.id === dragState.id);
+        if(data) data.fontSize = newSize;
+        document.getElementById('txt-size').value = newSize;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if(dragState) {
+        const el = document.getElementById(`tb-${dragState.id}`);
+        if(el) {
+          const span = el.querySelector('.tb-text');
+          updateElementData(dragState.id, el, span);
+        }
+        dragState = null;
+      }
+    });
+
+    function startDrag(e, id) {
+      const el = document.getElementById(`tb-${id}`);
+      dragState = {
+        type: 'move', id,
+        startX: parseInt(el.style.left), startY: parseInt(el.style.top),
+        mouseX: e.clientX, mouseY: e.clientY
+      };
+    }
+
+    function startResize(e, id) {
+      e.stopPropagation();
+      const el = document.getElementById(`tb-${id}`);
+      const data = textElements.find(t => t.id === id);
+      dragState = {
+        type: 'resize', id,
+        startSize: data ? data.fontSize : 32,
+        mouseX: e.clientX, mouseY: e.clientY
+      };
+    }
+
+    /* ===== EXPORT WITH TEXT ===== */
+    function renderTextToCanvas() {
+      const ctx = canvas.getContext('2d');
+      if (!baseImage || !baseImage.complete || baseImage.naturalWidth === 0) return;
+      ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+      
+      if(textElements.length === 0) return;
+
+      const oW = overlay.clientWidth;
+      const oH = overlay.clientHeight;
+      const scaleX = canvas.width / oW;
+      const scaleY = canvas.height / oH;
+
+      ctx.textBaseline = 'top';
+      textElements.forEach(t => {
+        const fontSize = t.fontSize * scaleY;
+        ctx.font = `${t.fontWeight} ${fontSize}px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = t.color;
+        
+        const x = t.x * scaleX;
+        let y = t.y * scaleY;
+        
+        const lines = t.text.split('\n');
+        lines.forEach(line => {
+          ctx.fillText(line, x, y);
+          y += fontSize * 1.25;
+        });
+      });
+    }
+
+    function download() {
+      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
+      renderTextToCanvas();
+      const fmt = document.getElementById('fmt').value;
+      const mime = fmt==='jpeg'?'image/jpeg':fmt==='webp'?'image/webp':'image/png';
+      const ext = fmt==='jpeg'?'jpg':fmt;
+      canvas.toBlob(blob => {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `preview_${Date.now()}.${ext}`; a.click();
+        toast('Скачано с текстом','success');
+      }, mime, 0.92);
+    }
+
+    async function copyToClipboard() {
+      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
+      renderTextToCanvas();
+      try {
+        const pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({'image/png': pngBlob})]);
+        toast('Скопировано в буфер','success');
+      } catch(e) { toast('Ошибка копирования или браузер не поддерживает','error'); }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.target.isContentEditable || e.target.closest('.text-box') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      
+      if(e.code==='Space' && srcType==='file' && getPlayer().src) { 
+        e.preventDefault(); 
+        getPlayer().paused ? getPlayer().play() : getPlayer().pause(); 
+      }
+      if(e.key==='Delete' && selectedId && !document.querySelector('.text-box.editing')) deleteSelectedText();
+    });
+  </script>
+</body>
+</html>
