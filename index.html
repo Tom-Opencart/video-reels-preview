@@ -39,14 +39,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
 
     header {
-      padding: 16px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(12px);
-      position: sticky; top: 0; z-index: 50;
+      background: var(--bg-page);
     }
     .logo {
       font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
@@ -55,20 +53,20 @@
     }
     .logo span { color: var(--accent); }
 
-    .hero { text-align: center; padding: 48px 0 24px; }
-    .hero h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .hero { text-align: center; padding: 28px 0 12px; }
+    .hero h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; }
     .hero p { font-size: 1rem; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
 
     .tool-card {
       background: var(--bg-page);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 16px;
       box-shadow: var(--shadow-md);
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
-    .tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; justify-content: center; flex-wrap: wrap; }
     .tab {
       padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
       background: var(--bg-page); color: var(--text-secondary); cursor: pointer;
@@ -77,7 +75,7 @@
     .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
     .tab.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
 
-    .input-group { display: none; margin-bottom: 20px; }
+    .input-group { display: none; margin-bottom: 14px; }
     .input-group.active { display: block; }
     .input-row { display: flex; gap: 10px; }
     .input-field {
@@ -116,7 +114,7 @@
     .file-info { margin-top: 8px; font-size: 0.8rem; color: var(--success); font-family: var(--font-mono); }
     .cors-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; text-align: center; }
 
-    .preview-area { display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+    .preview-area { display: none; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
     .preview-area.visible { display: block; }
     .video-wrapper {
       position: relative; background: #000; border-radius: var(--radius);
@@ -131,10 +129,10 @@
     }
     .warning-box.visible { display: flex; }
 
-    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
-    .time-control {
-      display: flex; align-items: center; gap: 8px; background: var(--bg-secondary);
-      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 0; }
+    .video-wrapper {
+      position: relative; background: #000; border-radius: var(--radius);
+      overflow: hidden; aspect-ratio: 16/9; margin-bottom: 10px;
     }
     .time-control input[type="range"] { width: 110px; accent-color: var(--accent); cursor: pointer; }
     .time-label { font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-mono); min-width: 90px; }
@@ -144,30 +142,60 @@
       outline: none; cursor: pointer;
     }
 
-    .result-area { display: none; margin-top: 24px; }
+    .result-area { display: none; margin-top: 8px; }
     .result-area.visible { display: block; }
     
-    .result-container { max-width: 520px; margin: 0 auto; }
+    .result-container { max-width: 100%; margin: 0 auto; }
     .result-wrapper { 
       position: relative; width: 100%; background: var(--bg-secondary); 
       border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); 
     }
     .result-img { width: 100%; height: auto; display: block; }
+    .zoom-container {
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+    }
+    /* в сплит-режиме картинка ограничена высотой экрана */
+    .result-split.split-active .result-wrapper {
+      max-height: calc(100vh - 220px);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .result-split.split-active .result-wrapper.zoomed {
+      overflow: auto;
+      cursor: grab;
+    }
+    .result-split.split-active .result-wrapper.zoomed.grabbing {
+      cursor: grabbing;
+    }
+    .result-split.split-active .result-img {
+      width: auto; height: auto;
+      max-width: 100%; max-height: calc(100vh - 220px);
+      object-fit: contain;
+    }
+    .zoom-badge {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(0,0,0,0.65); color: #fff; font-size: 0.75rem;
+      padding: 3px 8px; border-radius: 6px; font-family: var(--font-mono);
+      pointer-events: none; opacity: 0; transition: opacity 0.2s;
+      z-index: 10;
+    }
+    .zoom-badge.visible { opacity: 1; }
     
     .text-overlay { position: absolute; inset: 0; cursor: crosshair; }
     .text-overlay.disabled { pointer-events: none; cursor: default; }
     
     .text-box {
       position: absolute; padding: 6px 10px;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);
       border-radius: 6px; color: #fff; font-family: var(--font-ui);
       cursor: move; user-select: none; -webkit-user-select: none;
       border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s;
       line-height: 1.25;
     }
+    .text-box.has-bg { backdrop-filter: blur(2px); }
     .text-box:hover { border-color: rgba(255,255,255,0.6); }
     .text-box.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }
-    .text-box.editing { cursor: text !important; user-select: text !important; -webkit-user-select: text !important; background: rgba(0,0,0,0.65); }
+    .text-box.editing { cursor: text !important; user-select: text !important; -webkit-user-select: text !important; }
     .text-box.editing .resize-handle { display: none; }
     
     .tb-text {
@@ -181,6 +209,16 @@
       cursor: nwse-resize; display: none;
     }
     .text-box.selected .resize-handle { display: block; }
+    .text-box:hover .resize-handle { display: block; }
+
+    .del-btn {
+      position: absolute; top: -10px; right: -10px; width: 22px; height: 22px;
+      background: #ef4444; color: #fff; border: 2px solid #fff; border-radius: 50%;
+      font-size: 12px; line-height: 1; cursor: pointer; display: none;
+      align-items: center; justify-content: center; z-index: 5;
+    }
+    .text-box:hover .del-btn, .text-box.selected .del-btn { display: flex; }
+    .text-box.editing .del-btn { display: none; }
 
     .text-toolbar {
       display: none; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -193,10 +231,10 @@
     .text-toolbar select, .text-toolbar input[type="range"] { accent-color: var(--accent); cursor: pointer; }
     .edit-hint { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
 
-    .result-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .result-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
     .meta { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; font-family: var(--font-mono); }
 
-    footer { text-align: center; padding: 32px 0; color: var(--text-muted); font-size: 0.825rem; border-top: 1px solid var(--border); }
+    footer { text-align: center; padding: 16px 0; color: var(--text-muted); font-size: 0.75rem; border-top: 1px solid var(--border); }
 
     .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
     .toast {
@@ -209,6 +247,97 @@
     .toast.info { border-left: 3px solid var(--accent); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+    /* сплит-лейаут: настройки слева, превью справа (только когда есть результат) */
+    .result-split { display: contents; }
+    .result-split.split-active {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .result-split.split-active .split-image { order: 2; }
+    .result-split.split-active .split-settings { order: 1; }
+    .result-split.split-active .split-settings {
+      position: sticky; top: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .result-split.split-active .split-settings .text-toolbar {
+      display: none; margin-top: 0; background: transparent; border: none;
+      padding: 0; flex-direction: column; gap: 8px;
+    }
+    .result-split.split-active .split-settings .text-toolbar.visible {
+      display: flex;
+    }
+    .result-split.split-active .split-settings .text-toolbar label { font-size: 0.825rem; }
+    .result-split.split-active .split-settings .result-actions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .split-image .result-wrapper { border: 1px solid var(--border); }
+    .help-hints {
+      display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 8px;
+      font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;
+    }
+    .help-hints span { white-space: nowrap; }
+
+    /* превью-модал */
+    .preview-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+    }
+    .preview-overlay.visible { display: flex; }
+    .preview-overlay img {
+      max-width: 92vw; max-height: 85vh; border-radius: 8px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5); object-fit: contain;
+    }
+    .preview-close {
+      position: fixed; top: 16px; right: 24px;
+      background: rgba(255,255,255,0.15); color: #fff; border: none;
+      width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .preview-close:hover { background: rgba(255,255,255,0.3); }
+    .preview-info {
+      color: rgba(255,255,255,0.6); font-size: 0.8rem; font-family: var(--font-mono);
+    }
+
+    /* этапы-спойлеры */
+    .stage {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+      scroll-margin-top: 12px;
+    }
+    .stage.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+    .stage-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px; cursor: pointer; user-select: none;
+      background: var(--bg-secondary); font-weight: 600; font-size: 0.85rem; color: var(--text-primary);
+      transition: background 0.15s;
+    }
+    .stage-header:hover { background: var(--bg-hover); }
+    .stage-num {
+      display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--text-muted); color: #fff; font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0; transition: background 0.2s;
+    }
+    .stage.active .stage-num { background: var(--accent); }
+    .stage.done .stage-num { background: var(--success); }
+    .stage-summary { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stage-arrow { margin-left: auto; transition: transform 0.25s; color: var(--text-muted); font-size: 0.7rem; }
+    .stage.collapsed .stage-arrow { transform: rotate(-90deg); }
+    .stage-body { padding: 12px 14px; display: block; }
+    .stage.collapsed .stage-body { display: none; }
+
+    @media (max-width: 800px) {
+      .result-split.split-active { grid-template-columns: 1fr; }
+      .split-settings { position: static; }
+    }
     @media (max-width: 640px) {
       .hero h1 { font-size: 1.6rem; }
       .input-row { flex-direction: column; }
@@ -233,12 +362,152 @@
     </section>
 
     <div class="tool-card">
+
+      <div class="stage active" id="stage-source">
+        <div class="stage-header" onclick="toggleStage('stage-source')">
+          <span class="stage-num">1</span> Источник видео
+          <span class="stage-summary" id="stage-source-summary"></span>
+          <span class="stage-arrow">▾</span>
+        </div>
+        <div class="stage-body">
+
       <div class="tabs">
         <button class="tab active" data-src="auto" onclick="switchTab('auto')">🔍 Авто</button>
         <button class="tab" data-src="youtube" onclick="switchTab('youtube')">▶ YouTube</button>
         <button class="tab" data-src="rutube" onclick="switchTab('rutube')">▶ Rutube</button>
         <button class="tab" data-src="file" onclick="switchTab('file')">▶ MP4 / WebM</button>
       </div>
+
+      <div class="input-group active" id="grp-auto">
+        <div class="input-row">
+          <input type="text" class="input-field" id="auto-url" placeholder="Вставьте ссылку (YouTube, Rutube, прямой файл)..." oninput="validateAuto()">
+          <button class="btn btn-primary" id="btn-auto" onclick="loadAuto()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+        <div class="cors-hint">Система автоматически определит тип источника.</div>
+      </div>
+
+      <div class="input-group" id="grp-youtube">
+        <div class="input-row">
+          <input type="text" class="input-field" id="yt-url" placeholder="https://www.youtube.com/watch?v=... или https://youtu.be/..." oninput="validateYt()">
+          <button class="btn btn-primary" id="btn-yt" onclick="loadYt()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+      </div>
+
+      <div class="input-group" id="grp-rutube">
+        <div class="input-row">
+          <input type="text" class="input-field" id="rt-url" placeholder="https://rutube.ru/video/..." oninput="validateRt()">
+          <button class="btn btn-primary" id="btn-rt" onclick="loadRt()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+      </div>
+
+      <div class="input-group" id="grp-file">
+        <div class="input-row" style="margin-bottom: 12px;">
+          <input type="text" class="input-field" id="mp4-url" placeholder="https://example.com/video.mp4 (прямая ссылка)" oninput="validateMp4Url()">
+          <button class="btn btn-primary" id="btn-mp4-url" onclick="loadMp4Url()" disabled>ЗАГРУЗИТЬ</button>
+        </div>
+        <div class="cors-hint">⚠ Сервер с видео должен поддерживать CORS для захвата кадра</div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 8px 0;">или загрузите файл</div>
+        <div class="drop-zone" id="dropzone">
+          <p>🎬 Перетащите файл сюда или нажмите для выбора</p>
+          <p class="hint">MP4, WebM, MOV, AVI...</p>
+          <input type="file" id="file-input" accept="video/*" onchange="handleFile(this.files[0])">
+        </div>
+        <div class="file-info" id="file-info"></div>
+      </div>
+
+        </div>
+      </div>
+
+      <div class="stage collapsed" id="stage-video">
+        <div class="stage-header" onclick="toggleStage('stage-video')">
+          <span class="stage-num">2</span> Предпросмотр видео
+          <span class="stage-summary" id="stage-video-summary"></span>
+          <span class="stage-arrow">▾</span>
+        </div>
+        <div class="stage-body">
+
+      <div class="preview-area" id="preview-area">
+        <div class="warning-box" id="rt-warning">⚠ Захват кадра из встроенного плеера Rutube недоступен в браузере. Доступна загрузка превью-изображения.</div>
+        <div class="video-wrapper" id="video-wrapper">
+          <video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>
+        </div>
+        <div class="controls" id="video-controls">
+          <div class="time-control">
+            <span class="time-label" id="time-display">0:00 / 0:00</span>
+            <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1" oninput="seek(this.value)">
+          </div>
+          <select class="format-select" id="fmt">
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG 90%</option>
+            <option value="webp">WebP</option>
+          </select>
+          <button class="btn btn-primary" id="btn-capture" onclick="capture()">📸 Снять кадр</button>
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+      <div class="stage collapsed" id="stage-result">
+        <div class="stage-header" onclick="toggleStage('stage-result')">
+          <span class="stage-num">3</span> Результат
+          <span class="stage-summary" id="stage-result-summary"></span>
+          <span class="stage-arrow">▾</span>
+        </div>
+        <div class="stage-body">
+
+      <div class="result-area" id="result-area">
+        <div class="result-container" id="result-container">
+          <div class="result-split" id="result-split">
+            <div class="split-image">
+              <div class="result-wrapper" id="result-wrapper">
+                <div class="zoom-container" id="zoom-container">
+                  <img id="result-img" class="result-img" alt="Превью">
+                  <div id="text-overlay" class="text-overlay disabled"></div>
+                </div>
+                <div class="zoom-badge" id="zoom-badge">100%</div>
+              </div>
+              <div class="help-hints" id="help-hints">
+                <span>🖱 Ctrl+колесо — зум</span>
+                <span>🖱 Зажать + тащить — двигать при зуме</span>
+                <span>✏️ «Текст» → клик по картинке → перетащи → клик для ввода</span>
+                <span>⌨ Enter — сохранить, Esc — выйти</span>
+              </div>
+            </div>
+            <div class="split-settings" id="split-settings">
+              <div class="text-toolbar" id="text-toolbar">
+                <label>Цвет: <input type="color" id="txt-color" value="#ffffff" onchange="applyTextStyle()"></label>
+                <label>Жирность:
+                  <select id="txt-weight" onchange="applyTextStyle()">
+                    <option value="400">Обычный</option>
+                    <option value="600">Полужирный</option>
+                    <option value="700">Жирный</option>
+                    <option value="900">Сверхжирный</option>
+                  </select>
+                </label>
+                <label>Размер: <input type="range" id="txt-size" min="12" max="150" value="22" oninput="applyTextStyle()"></label>
+                <label class="bg-toggle">☑ Фон <input type="checkbox" id="txt-bg" checked onchange="applyTextStyle()"></label>
+                <label>Прозр.: <input type="range" id="txt-bg-opacity" min="5" max="100" value="40" oninput="applyTextStyle()"></label>
+                <button class="btn btn-danger btn-sm" onclick="deleteSelectedText()">🗑 Удалить</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearAllText()">🧹 Очистить всё</button>
+                <span class="edit-hint">💡 Enter — сохранить, Esc — выйти</span>
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-secondary" id="btn-text-mode" onclick="toggleTextMode()">✏️ Текст</button>
+                <button class="btn btn-secondary" onclick="openPreview()">👁 Предпросмотр</button>
+                <button class="btn btn-primary" onclick="download()">⬇ Скачать</button>
+                <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Копировать</button>
+                <span class="meta" id="res-meta"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+    </div>
 
       <div class="input-group active" id="grp-auto">
         <div class="input-row">
@@ -297,33 +566,40 @@
       </div>
 
       <div class="result-area" id="result-area">
-        <div class="result-container">
-          <div class="result-wrapper" id="result-wrapper">
-            <img id="result-img" class="result-img" alt="Превью">
-            <div id="text-overlay" class="text-overlay disabled"></div>
-          </div>
-          
-          <div class="result-actions">
-            <button class="btn btn-secondary" id="btn-text-mode" onclick="toggleTextMode()">✏️ Текст</button>
-            <button class="btn btn-primary" onclick="download()">⬇ Скачать</button>
-            <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Копировать</button>
-            <span class="meta" id="res-meta"></span>
-          </div>
-
-          <div class="text-toolbar" id="text-toolbar">
-            <label>Цвет: <input type="color" id="txt-color" value="#ffffff" onchange="applyTextStyle()"></label>
-            <label>Жирность:
-              <select id="txt-weight" onchange="applyTextStyle()">
-                <option value="400">Обычный</option>
-                <option value="600">Полужирный</option>
-                <option value="700">Жирный</option>
-                <option value="900">Сверхжирный</option>
-              </select>
-            </label>
-            <label>Размер: <input type="range" id="txt-size" min="12" max="150" value="32" oninput="applyTextStyle()"></label>
-            <button class="btn btn-danger btn-sm" onclick="deleteSelectedText()">🗑 Удалить</button>
-            <button class="btn btn-secondary btn-sm" onclick="clearAllText()">🧹 Очистить всё</button>
-            <span class="edit-hint">💡 Двойной клик — редактирование. Enter — сохранить.</span>
+        <div class="result-container" id="result-container">
+          <div class="result-split" id="result-split">
+            <div class="split-image">
+              <div class="result-wrapper" id="result-wrapper">
+                <img id="result-img" class="result-img" alt="Превью">
+                <div id="text-overlay" class="text-overlay disabled"></div>
+              </div>
+            </div>
+            <div class="split-settings" id="split-settings">
+              <div class="text-toolbar" id="text-toolbar">
+                <label>Цвет: <input type="color" id="txt-color" value="#ffffff" onchange="applyTextStyle()"></label>
+                <label>Жирность:
+                  <select id="txt-weight" onchange="applyTextStyle()">
+                    <option value="400">Обычный</option>
+                    <option value="600">Полужирный</option>
+                    <option value="700">Жирный</option>
+                    <option value="900">Сверхжирный</option>
+                  </select>
+                </label>
+                <label>Размер: <input type="range" id="txt-size" min="12" max="150" value="22" oninput="applyTextStyle()"></label>
+                <label class="bg-toggle">☑ Фон <input type="checkbox" id="txt-bg" checked onchange="applyTextStyle()"></label>
+                <label>Прозр.: <input type="range" id="txt-bg-opacity" min="5" max="100" value="40" oninput="applyTextStyle()"></label>
+                <button class="btn btn-danger btn-sm" onclick="deleteSelectedText()">🗑 Удалить</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearAllText()">🧹 Очистить всё</button>
+                <span class="edit-hint">💡 Enter — сохранить, Esc — выйти</span>
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-secondary" id="btn-text-mode" onclick="toggleTextMode()">✏️ Текст</button>
+                <button class="btn btn-secondary" onclick="openPreview()">👁 Предпросмотр</button>
+                <button class="btn btn-primary" onclick="download()">⬇ Скачать</button>
+                <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Копировать</button>
+                <span class="meta" id="res-meta"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -341,6 +617,12 @@
 
   <canvas id="cvs" style="display:none"></canvas>
   <div class="toast-container" id="toasts"></div>
+
+  <div class="preview-overlay" id="preview-overlay" onclick="closePreview()">
+    <button class="preview-close" onclick="closePreview()" title="Закрыть (Esc)">✕</button>
+    <img id="preview-img" alt="Предпросмотр" onclick="event.stopPropagation()">
+    <span class="preview-info" id="preview-info"></span>
+  </div>
 
   <script>
     let srcType = 'auto';
@@ -362,11 +644,105 @@
     const btnTextMode = document.getElementById('btn-text-mode');
     const videoControls = document.getElementById('video-controls');
     const btnCapture = document.getElementById('btn-capture');
+    const resultSplit = document.getElementById('result-split');
+    const resultWrapper = document.getElementById('result-wrapper');
+    const previewOverlay = document.getElementById('preview-overlay');
+    const previewImg = document.getElementById('preview-img');
+    const previewInfo = document.getElementById('preview-info');
+    const zoomContainer = document.getElementById('zoom-container');
+    const zoomBadge = document.getElementById('zoom-badge');
 
     let textElements = [];
     let selectedId = null;
     let isTextMode = false;
     let nextId = 1;
+    let zoomLevel = 1;
+    let zoomTimer = null;
+
+    /* ===== STAGE MANAGEMENT ===== */
+    function toggleStage(stageId) {
+      const el = document.getElementById(stageId);
+      if (!el) return;
+      el.classList.toggle('collapsed');
+    }
+
+    function goToStage(stageId) {
+      document.querySelectorAll('.stage').forEach(s => { s.classList.add('collapsed'); s.classList.remove('active'); });
+      const el = document.getElementById(stageId);
+      if (!el) return;
+      el.classList.remove('collapsed');
+      el.classList.add('active');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        });
+      });
+    }
+
+    function markDone(stageId, summary) {
+      const el = document.getElementById(stageId);
+      if (!el) return;
+      el.classList.add('done');
+      el.classList.remove('active');
+      const summaryEl = el.querySelector('.stage-summary');
+      if (summaryEl && summary) summaryEl.textContent = '— ' + summary;
+    }
+
+    /* ===== ZOOM ===== */
+    function updateZoom() {
+      zoomContainer.style.transform = `scale(${zoomLevel})`;
+      zoomBadge.textContent = Math.round(zoomLevel * 100) + '%';
+      zoomBadge.classList.add('visible');
+      if (zoomLevel === 1) {
+        resultWrapper.classList.remove('zoomed');
+      } else {
+        resultWrapper.classList.add('zoomed');
+      }
+      clearTimeout(zoomTimer);
+      zoomTimer = setTimeout(() => zoomBadge.classList.remove('visible'), 1500);
+    }
+
+    resultWrapper.addEventListener('wheel', (e) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      zoomLevel = Math.max(0.25, Math.min(3, zoomLevel + delta));
+      updateZoom();
+    }, { passive: false });
+
+    resultWrapper.addEventListener('dblclick', (e) => {
+      if (e.target === resultWrapper || e.target === zoomContainer) {
+        zoomLevel = 1;
+        updateZoom();
+      }
+    });
+
+    /* pan при зуме: зажать мышку и перетащить */
+    let panState = null;
+    resultWrapper.addEventListener('mousedown', (e) => {
+      if (zoomLevel <= 1) return;
+      if (e.target.closest('.text-box')) return;
+      if (e.target.closest('.btn') || e.target.closest('button')) return;
+      if (isTextMode && e.target === overlay) return;
+      panState = { x: e.clientX, y: e.clientY, scrollLeft: resultWrapper.scrollLeft, scrollTop: resultWrapper.scrollTop };
+      resultWrapper.classList.add('grabbing');
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!panState) return;
+      const dx = panState.x - e.clientX;
+      const dy = panState.y - e.clientY;
+      resultWrapper.scrollLeft = panState.scrollLeft + dx;
+      resultWrapper.scrollTop = panState.scrollTop + dy;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (panState) {
+        resultWrapper.classList.remove('grabbing');
+        panState = null;
+      }
+    });
 
     function getPlayer() { return document.getElementById('player'); }
 
@@ -378,7 +754,10 @@
       previewArea.classList.remove('visible');
       resultArea.classList.remove('visible');
       rtWarning.classList.remove('visible');
+      resultSplit.classList.remove('split-active');
       clearTextOverlay();
+      goToStage('stage-source');
+      zoomLevel = 1; updateZoom();
       
       document.getElementById('mp4-url').value = '';
       document.getElementById('btn-mp4-url').disabled = true;
@@ -431,6 +810,8 @@
       previewArea.classList.add('visible');
       rtWarning.classList.remove('visible');
       videoControls.style.display = 'none';
+      markDone('stage-source', 'YouTube');
+      goToStage('stage-video');
       toast('YouTube видео загружено','success');
     }
 
@@ -444,6 +825,8 @@
       previewArea.classList.add('visible');
       rtWarning.classList.add('visible');
       videoControls.style.display = 'none';
+      markDone('stage-source', 'Rutube');
+      goToStage('stage-video');
       toast('Rutube видео загружено','success');
     }
 
@@ -459,6 +842,8 @@
       videoControls.style.display = 'flex';
       btnCapture.style.display = 'inline-flex';
       clearTextOverlay();
+      markDone('stage-source', 'MP4 ссылка');
+      goToStage('stage-video');
       toast('Загрузка видео по ссылке...', 'info');
     }
     function onVideoError() { toast('Ошибка загрузки видео. Проверьте ссылку или CORS.', 'error'); }
@@ -478,6 +863,8 @@
       videoControls.style.display = 'flex';
       btnCapture.style.display = 'inline-flex';
       clearTextOverlay();
+      markDone('stage-source', f.name);
+      goToStage('stage-video');
       toast('Файл загружен','success');
     }
 
@@ -515,8 +902,11 @@
         resultImg.src = baseImage.src;
         resMeta.textContent = `${canvas.width}×${canvas.height} • ${fmt.toUpperCase()}`;
         resultArea.classList.add('visible');
+        resultSplit.classList.add('split-active');
         clearTextOverlay();
-        resultArea.scrollIntoView({behavior:'smooth', block:'center'});
+        markDone('stage-video', 'Кадр захвачен');
+        goToStage('stage-result');
+        zoomLevel = 1; updateZoom();
         toast('Кадр захвачен. Добавьте текст или скачайте.','success');
       }, mime, quality);
     }
@@ -534,8 +924,9 @@
 
     overlay.addEventListener('click', (e) => {
       if(!isTextMode || e.target !== overlay) return;
+      deselectText();
       const rect = overlay.getBoundingClientRect();
-      createTextBox(e.clientX - rect.left, e.clientY - rect.top);
+      createTextBox((e.clientX - rect.left) / zoomLevel, (e.clientY - rect.top) / zoomLevel);
     });
 
     function createTextBox(x, y) {
@@ -545,7 +936,7 @@
       el.id = `tb-${id}`;
       el.style.left = `${x}px`;
       el.style.top = `${y}px`;
-      el.style.fontSize = '32px';
+      el.style.fontSize = '22px';
       el.style.fontWeight = '700';
       el.style.color = '#ffffff';
       
@@ -558,26 +949,52 @@
       handle.className = 'resize-handle';
       el.appendChild(handle);
 
+      const delBtn = document.createElement('div');
+      delBtn.className = 'del-btn';
+      delBtn.textContent = '×';
+      delBtn.title = 'Удалить';
+      delBtn.addEventListener('mousedown', (e) => {
+        e.stopPropagation(); e.preventDefault();
+        deleteTextById(id);
+      });
+      el.appendChild(delBtn);
+
       el.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!el.classList.contains('editing')) selectText(id);
+        if (el.classList.contains('editing')) return;
+        if (selectedId === id) {
+          startEditing(id, el, span);
+        } else {
+          selectText(id);
+        }
       });
 
       el.addEventListener('dblclick', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+        e.stopPropagation(); e.preventDefault();
         startEditing(id, el, span);
       });
 
       el.addEventListener('mousedown', (e) => {
         if (e.target === handle) { startResize(e, id); return; }
+        if (e.target === delBtn) return;
         if (el.classList.contains('editing')) return;
         startDrag(e, id);
       });
 
       overlay.appendChild(el);
-      textElements.push({ id, x, y, text: 'Текст', fontSize: 32, fontWeight: '700', color: '#ffffff' });
+      const curBg = document.getElementById('txt-bg').checked;
+      const curBgOp = parseInt(document.getElementById('txt-bg-opacity').value);
+      textElements.push({ id, x, y, text: 'Текст', fontSize: 22, fontWeight: '700', color: '#ffffff', hasBg: curBg, bgOpacity: curBgOp });
+      if (curBg) { el.classList.add('has-bg'); el.style.background = `rgba(0,0,0,${curBgOp/100})`; }
       selectText(id);
+    }
+
+    function deleteTextById(id) {
+      const el = document.getElementById(`tb-${id}`);
+      if (el) el.remove();
+      textElements = textElements.filter(t => t.id !== id);
+      if (selectedId === id) deselectText();
+      toast('Текст удалён', 'success');
     }
 
     function startEditing(id, el, span) {
@@ -586,6 +1003,19 @@
       el.classList.add('selected', 'editing');
       span.contentEditable = true;
       span.focus();
+      
+      const data = textElements.find(t => t.id === id);
+      if (data) {
+        document.getElementById('txt-color').value = data.color;
+        document.getElementById('txt-weight').value = data.fontWeight;
+        document.getElementById('txt-size').value = data.fontSize;
+        document.getElementById('txt-bg').checked = data.hasBg !== false;
+        document.getElementById('txt-bg-opacity').value = data.bgOpacity || 40;
+        if (data.hasBg !== false) {
+          const editOp = Math.min(100, (data.bgOpacity || 40) + 25);
+          el.style.background = `rgba(0,0,0,${editOp/100})`;
+        }
+      }
       
       const range = document.createRange();
       range.selectNodeContents(span);
@@ -598,8 +1028,14 @@
       span.onblur = () => {
         span.contentEditable = false;
         el.classList.remove('editing');
-        if (!span.textContent.trim()) span.textContent = 'Текст';
+        if (!span.textContent.trim()) { deleteTextById(id); return; }
         updateElementData(id, el, span);
+        const d = textElements.find(t => t.id === id);
+        if (d && d.hasBg !== false) {
+          el.style.background = `rgba(0,0,0,${(d.bgOpacity || 40)/100})`;
+        } else if (d) {
+          el.style.background = 'none'; el.classList.remove('has-bg');
+        }
       };
 
       span.onkeydown = (e) => {
@@ -621,6 +1057,8 @@
         document.getElementById('txt-color').value = data.color;
         document.getElementById('txt-weight').value = data.fontWeight;
         document.getElementById('txt-size').value = data.fontSize;
+        document.getElementById('txt-bg').checked = data.hasBg !== false;
+        document.getElementById('txt-bg-opacity').value = data.bgOpacity || 40;
       }
       toolbar.classList.add('visible');
     }
@@ -643,19 +1081,25 @@
       data.color = document.getElementById('txt-color').value;
       data.fontWeight = document.getElementById('txt-weight').value;
       data.fontSize = parseInt(document.getElementById('txt-size').value);
+      data.hasBg = document.getElementById('txt-bg').checked;
+      data.bgOpacity = parseInt(document.getElementById('txt-bg-opacity').value);
 
       el.style.color = data.color;
       el.style.fontWeight = data.fontWeight;
       el.style.fontSize = `${data.fontSize}px`;
+
+      if (data.hasBg) {
+        el.classList.add('has-bg');
+        el.style.background = `rgba(0,0,0,${data.bgOpacity / 100})`;
+      } else {
+        el.classList.remove('has-bg');
+        el.style.background = 'none';
+      }
     }
 
     function deleteSelectedText() {
       if (!selectedId) return toast('Сначала выделите текст кликом', 'info');
-      const el = document.getElementById(`tb-${selectedId}`);
-      if (el) el.remove();
-      textElements = textElements.filter(t => t.id !== selectedId);
-      deselectText();
-      toast('Текст удалён', 'success');
+      deleteTextById(selectedId);
     }
 
     function clearAllText() {
@@ -675,6 +1119,8 @@
       btnTextMode.classList.remove('btn-primary');
       btnTextMode.classList.add('btn-secondary');
       btnTextMode.textContent = '✏️ Текст';
+      document.getElementById('txt-bg').checked = true;
+      document.getElementById('txt-bg-opacity').value = 40;
     }
 
     function updateElementData(id, el, span) {
@@ -689,18 +1135,25 @@
     /* Drag & Resize */
     let dragState = null;
     document.addEventListener('mousemove', (e) => {
+      if (panState) {
+        const dx = panState.x - e.clientX;
+        const dy = panState.y - e.clientY;
+        resultWrapper.scrollLeft = panState.scrollLeft + dx;
+        resultWrapper.scrollTop = panState.scrollTop + dy;
+        return;
+      }
       if(!dragState) return;
       e.preventDefault();
       const el = document.getElementById(`tb-${dragState.id}`);
       if(!el) return;
 
       if(dragState.type === 'move') {
-        const nx = dragState.startX + (e.clientX - dragState.mouseX);
-        const ny = dragState.startY + (e.clientY - dragState.mouseY);
+        const nx = dragState.startX + (e.clientX - dragState.mouseX) / zoomLevel;
+        const ny = dragState.startY + (e.clientY - dragState.mouseY) / zoomLevel;
         el.style.left = `${Math.max(0, nx)}px`;
         el.style.top = `${Math.max(0, ny)}px`;
       } else if(dragState.type === 'resize') {
-        const delta = (e.clientX - dragState.mouseX + e.clientY - dragState.mouseY) / 2;
+        const delta = (e.clientX - dragState.mouseX + e.clientY - dragState.mouseY) / 2 / zoomLevel;
         const newSize = Math.max(12, Math.min(150, dragState.startSize + delta));
         el.style.fontSize = `${newSize}px`;
         const data = textElements.find(t => t.id === dragState.id);
@@ -757,12 +1210,38 @@
       textElements.forEach(t => {
         const fontSize = t.fontSize * scaleY;
         ctx.font = `${t.fontWeight} ${fontSize}px Inter, system-ui, sans-serif`;
-        ctx.fillStyle = t.color;
         
         const x = t.x * scaleX;
         let y = t.y * scaleY;
+        const padX = 10 * scaleX;
+        const padY = 6 * scaleY;
         
         const lines = t.text.split('\n');
+
+        if (t.hasBg !== false) {
+          const bgAlpha = (t.bgOpacity || 40) / 100;
+          let maxW = 0;
+          lines.forEach(line => { const m = ctx.measureText(line); if (m.width > maxW) maxW = m.width; });
+          const textH = lines.length * fontSize * 1.25;
+
+          ctx.fillStyle = `rgba(0,0,0,${bgAlpha})`;
+          const rx = x - padX, ry = y - padY, rw = maxW + padX * 2, rh = textH + padY * 2;
+          const r = 6 * scaleY;
+          ctx.beginPath();
+          ctx.moveTo(rx + r, ry);
+          ctx.lineTo(rx + rw - r, ry);
+          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r);
+          ctx.lineTo(rx + rw, ry + rh - r);
+          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh);
+          ctx.lineTo(rx + r, ry + rh);
+          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r);
+          ctx.lineTo(rx, ry + r);
+          ctx.quadraticCurveTo(rx, ry, rx + r, ry);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.fillStyle = t.color;
         lines.forEach(line => {
           ctx.fillText(line, x, y);
           y += fontSize * 1.25;
@@ -793,9 +1272,38 @@
       } catch(e) { toast('Ошибка копирования или браузер не поддерживает','error'); }
     }
 
+    function openPreview() {
+      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
+      renderTextToCanvas();
+      const fmt = document.getElementById('fmt').value;
+      const mime = fmt==='jpeg'?'image/jpeg':fmt==='webp'?'image/webp':'image/png';
+      canvas.toBlob(blob => {
+        previewImg.src = URL.createObjectURL(blob);
+        previewInfo.textContent = `${canvas.width}×${canvas.height} • ${fmt.toUpperCase()} • Esc — выйти`;
+        previewOverlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+      }, mime, 0.95);
+    }
+
+    function closePreview() {
+      previewOverlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
     document.addEventListener('keydown', e => {
-      if (e.target.isContentEditable || e.target.closest('.text-box') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if (previewOverlay.classList.contains('visible')) {
+        if (e.key === 'Escape') { closePreview(); return; }
+        return;
+      }
+      if (e.target.isContentEditable || e.target.closest('.text-box') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        if (e.key === 'Escape' && e.target.isContentEditable) { e.target.blur(); }
+        return;
+      }
       
+      if (e.key === 'Escape') {
+        if (selectedId) { deselectText(); return; }
+        if (isTextMode) { toggleTextMode(); return; }
+      }
       if(e.code==='Space' && srcType==='file' && getPlayer().src) { 
         e.preventDefault(); 
         getPlayer().paused ? getPlayer().play() : getPlayer().pause(); 
