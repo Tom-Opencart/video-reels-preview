@@ -57,15 +57,12 @@ function switchSourceTab(type) {
 }
 
 function hideVideoPlayer() {
-	const panel = document.getElementById('video-controls-panel');
 	const mini = document.getElementById('video-mini');
 	if (mini) mini.innerHTML = '';
-	if (panel) panel.style.display = 'none';
 }
 
 function showVideoPlayer() {
-	const panel = document.getElementById('video-controls-panel');
-	if (panel) panel.style.display = 'block';
+	if (window.openSection) window.openSection('section-video');
 }
 
 function detectSourceType(input) {

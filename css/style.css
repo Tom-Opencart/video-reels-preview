@@ -75,14 +75,38 @@ body {
   gap: 4px;
 }
 .panel-section {
-  padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
 .panel-section:last-child { border-bottom: none; }
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+.panel-header:hover { color: var(--accent); }
 .panel-title {
-  font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);
+  font-size: 0.75rem; font-weight: 700; color: inherit;
   text-transform: uppercase; letter-spacing: 0.04em;
-  margin-bottom: 8px;
+  flex: 1;
+}
+.panel-arrow {
+  font-size: 0.6rem; color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.panel-section.collapsed .panel-arrow {
+  transform: rotate(-90deg);
+}
+.panel-body {
+  padding-bottom: 10px;
+  transition: all 0.2s;
+}
+.panel-section.collapsed .panel-body {
+  display: none;
 }
 
 /* ---- Source Tabs ---- */

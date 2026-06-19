@@ -21,6 +21,20 @@ initVideoSource();
 render();
 updateLayerList();
 
+// Spoiler toggling
+document.querySelectorAll('.panel-header').forEach(header => {
+	header.addEventListener('click', () => {
+		const section = document.getElementById(header.dataset.section);
+		if (section) section.classList.toggle('collapsed');
+	});
+});
+
+// Global: open a specific spoiler section
+window.openSection = function (sectionId) {
+	const section = document.getElementById(sectionId);
+	if (section) section.classList.remove('collapsed');
+};
+
 // Mobile bar panel toggling
 const mobileTabs = document.querySelectorAll('.mobile-tab');
 mobileTabs.forEach(tab => {
@@ -36,9 +50,11 @@ mobileTabs.forEach(tab => {
 			left.classList.toggle('mobile-open');
 			tab.classList.toggle('active', left.classList.contains('mobile-open'));
 		} else if (panel === 'filters') {
-			const fpanel = document.getElementById('filters-panel');
-			const wasHidden = fpanel.style.display === 'none';
-			updateMobileFilterPanel(!wasHidden);
+			const section = document.getElementById('section-filters');
+			if (section) {
+				section.classList.toggle('collapsed');
+				tab.classList.toggle('active', !section.classList.contains('collapsed'));
+			}
 		} else if (panel === 'export') {
 			const fmt = document.getElementById('fmt');
 			if (fmt) {
@@ -58,34 +74,6 @@ mobileTabs.forEach(tab => {
 	});
 });
 
-function updateMobileFilterPanel(show) {
-	const fpanel = document.getElementById('filters-panel');
-	if (!fpanel) return;
-	fpanel.style.display = show ? 'block' : 'none';
-	if (show) {
-		fpanel.style.position = 'fixed';
-		fpanel.style.bottom = '50px';
-		fpanel.style.left = '0';
-		fpanel.style.right = '0';
-		fpanel.style.background = 'var(--bg-page)';
-		fpanel.style.borderTop = '1px solid var(--border)';
-		fpanel.style.padding = '16px';
-		fpanel.style.zIndex = '95';
-		fpanel.style.maxHeight = '50vh';
-		fpanel.style.overflowY = 'auto';
-	} else {
-		fpanel.style.position = '';
-		fpanel.style.bottom = '';
-		fpanel.style.left = '';
-		fpanel.style.right = '';
-		fpanel.style.background = '';
-		fpanel.style.borderTop = '';
-		fpanel.style.padding = '';
-		fpanel.style.zIndex = '';
-		fpanel.style.maxHeight = '';
-		fpanel.style.overflowY = '';
-	}
-}
 
 document.addEventListener('keydown', (e) => {
 	if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {

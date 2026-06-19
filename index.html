@@ -19,96 +19,130 @@
   <main class="app">
     <!-- Левая панель: инструменты -->
     <aside class="panel panel-left" id="panel-left">
-      <div class="panel-section">
-        <div class="panel-title">Источник</div>
-        <div class="source-tabs">
-          <button class="tab active" data-src="auto">🔍 Авто</button>
-          <button class="tab" data-src="youtube">▶ YT</button>
-          <button class="tab" data-src="rutube">▶ RT</button>
-          <button class="tab" data-src="file">▶ MP4</button>
-        </div>
-        <div class="source-input" id="source-input">
-          <input type="text" class="input-field" id="source-url" placeholder="Вставьте ссылку...">
-          <button class="btn btn-primary" id="btn-load" disabled>Загрузить</button>
-        </div>
-        <div class="drop-zone" id="dropzone">
-          <p>Перетащите файл или нажмите</p>
-          <input type="file" id="file-input" accept="video/*">
-        </div>
-        <div class="file-info" id="file-info"></div>
-      </div>
 
-      <div class="panel-section" id="video-controls-panel" style="display:none">
-        <div class="panel-title">Видео</div>
-        <div class="video-mini" id="video-mini"></div>
-        <div class="time-control">
-          <span class="time-label" id="time-display">0:00 / 0:00</span>
-          <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1">
+      <div class="panel-section" id="section-source">
+        <div class="panel-header" data-section="section-source">
+          <span class="panel-title">📥 Источник видео</span>
+          <span class="panel-arrow">▾</span>
         </div>
-        <select class="format-select" id="fmt">
-          <option value="png">PNG</option>
-          <option value="jpeg">JPEG 90%</option>
-          <option value="webp">WebP</option>
-        </select>
-        <button class="btn btn-primary btn-block" id="btn-capture">📸 Снять кадр</button>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">Инструменты</div>
-        <div class="tool-grid">
-          <button class="tool-btn active" data-tool="select" title="Выделение (V)">↖</button>
-          <button class="tool-btn" data-tool="text" title="Текст (T)">T</button>
-          <button class="tool-btn" data-tool="rect" title="Прямоугольник (R)">▭</button>
-          <button class="tool-btn" data-tool="circle" title="Круг (C)">○</button>
-          <button class="tool-btn" data-tool="arrow" title="Стрелка (A)">→</button>
-          <button class="tool-btn" data-tool="line" title="Линия (L)">╱</button>
+        <div class="panel-body">
+          <div class="source-tabs">
+            <button class="tab active" data-src="auto">🔍 Авто</button>
+            <button class="tab" data-src="youtube">▶ YT</button>
+            <button class="tab" data-src="rutube">▶ RT</button>
+            <button class="tab" data-src="file">▶ MP4</button>
+          </div>
+          <div class="source-input" id="source-input">
+            <input type="text" class="input-field" id="source-url" placeholder="Вставьте ссылку...">
+            <button class="btn btn-primary" id="btn-load" disabled>Загрузить</button>
+          </div>
+          <div class="drop-zone" id="dropzone">
+            <p>Перетащите файл или нажмите</p>
+            <input type="file" id="file-input" accept="video/*">
+          </div>
+          <div class="file-info" id="file-info"></div>
         </div>
       </div>
 
-      <div class="panel-section" id="props-panel" style="display:none">
-        <div class="panel-title">Свойства</div>
-        <div id="props-content"></div>
-      </div>
-
-      <div class="panel-section" id="filters-panel" style="display:none">
-        <div class="panel-title">Фильтры</div>
-        <div id="filters-content">
-          <div class="filter-row"><label>Яркость <span id="val-brightness">100%</span></label><input type="range" id="filter-brightness" min="0" max="200" value="100"></div>
-          <div class="filter-row"><label>Контраст <span id="val-contrast">100%</span></label><input type="range" id="filter-contrast" min="0" max="200" value="100"></div>
-          <div class="filter-row"><label>Насыщенность <span id="val-saturate">100%</span></label><input type="range" id="filter-saturate" min="0" max="200" value="100"></div>
-          <div class="filter-row"><label>Размытие <span id="val-blur">0px</span></label><input type="range" id="filter-blur" min="0" max="20" value="0"></div>
-          <div class="filter-row"><label>Сепия <span id="val-sepia">0%</span></label><input type="range" id="filter-sepia" min="0" max="100" value="0"></div>
-          <div class="filter-row"><label>Ч/б <span id="val-grayscale">0%</span></label><input type="range" id="filter-grayscale" min="0" max="100" value="0"></div>
-          <div class="filter-row"><label>Инверсия <span id="val-invert">0%</span></label><input type="range" id="filter-invert" min="0" max="100" value="0"></div>
+      <div class="panel-section collapsed" id="section-video">
+        <div class="panel-header" data-section="section-video">
+          <span class="panel-title">🎥 Видео и захват</span>
+          <span class="panel-arrow">▾</span>
         </div>
-        <button class="btn btn-sm btn-block" id="btn-reset-filters" style="margin-top:8px">Сбросить</button>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">Слои</div>
-        <div class="layer-actions">
-          <button class="btn btn-sm" id="btn-add-layer" title="Добавить слой">+</button>
-          <button class="btn btn-sm" id="btn-dup-layer" title="Дублировать">📋</button>
-          <button class="btn btn-sm btn-danger" id="btn-del-layer" title="Удалить">🗑</button>
-        </div>
-        <div class="layer-list" id="layer-list">
-          <div class="layer-empty">Нет слоёв</div>
+        <div class="panel-body">
+          <div class="video-mini" id="video-mini"></div>
+          <div class="time-control">
+            <span class="time-label" id="time-display">0:00 / 0:00</span>
+            <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1">
+          </div>
+          <select class="format-select" id="fmt">
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG 90%</option>
+            <option value="webp">WebP</option>
+          </select>
+          <button class="btn btn-primary btn-block" id="btn-capture">📸 Снять кадр</button>
         </div>
       </div>
 
-      <div class="panel-section">
-        <div class="panel-title">Шаблоны</div>
-        <select class="input-field" id="template-select">
-          <option value="">— Выберите шаблон —</option>
-        </select>
-        <div class="template-actions">
-          <button class="btn btn-sm" id="btn-save-template">💾 Сохранить</button>
-          <button class="btn btn-sm btn-danger" id="btn-del-template" disabled>🗑 Удалить</button>
+      <div class="panel-section collapsed" id="section-tools">
+        <div class="panel-header" data-section="section-tools">
+          <span class="panel-title">🔧 Инструменты</span>
+          <span class="panel-arrow">▾</span>
         </div>
-        <div style="margin-top:8px">
-          <button class="btn btn-sm" id="btn-export-template">📤 Экспорт</button>
-          <button class="btn btn-sm" id="btn-import-template">📥 Импорт</button>
-          <input type="file" id="template-file-input" accept=".json" style="display:none">
+        <div class="panel-body">
+          <div class="tool-grid">
+            <button class="tool-btn active" data-tool="select" title="Выделение (V)">↖</button>
+            <button class="tool-btn" data-tool="text" title="Текст (T)">T</button>
+            <button class="tool-btn" data-tool="rect" title="Прямоугольник (R)">▭</button>
+            <button class="tool-btn" data-tool="circle" title="Круг (C)">○</button>
+            <button class="tool-btn" data-tool="arrow" title="Стрелка (A)">→</button>
+            <button class="tool-btn" data-tool="line" title="Линия (L)">╱</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section collapsed" id="section-props" style="display:none">
+        <div class="panel-header" data-section="section-props">
+          <span class="panel-title">📐 Свойства</span>
+          <span class="panel-arrow">▾</span>
+        </div>
+        <div class="panel-body" id="props-content"></div>
+      </div>
+
+      <div class="panel-section collapsed" id="section-filters">
+        <div class="panel-header" data-section="section-filters">
+          <span class="panel-title">🎨 Фильтры</span>
+          <span class="panel-arrow">▾</span>
+        </div>
+        <div class="panel-body">
+          <div id="filters-content">
+            <div class="filter-row"><label>Яркость <span id="val-brightness">100%</span></label><input type="range" id="filter-brightness" min="0" max="200" value="100"></div>
+            <div class="filter-row"><label>Контраст <span id="val-contrast">100%</span></label><input type="range" id="filter-contrast" min="0" max="200" value="100"></div>
+            <div class="filter-row"><label>Насыщенность <span id="val-saturate">100%</span></label><input type="range" id="filter-saturate" min="0" max="200" value="100"></div>
+            <div class="filter-row"><label>Размытие <span id="val-blur">0px</span></label><input type="range" id="filter-blur" min="0" max="20" value="0"></div>
+            <div class="filter-row"><label>Сепия <span id="val-sepia">0%</span></label><input type="range" id="filter-sepia" min="0" max="100" value="0"></div>
+            <div class="filter-row"><label>Ч/б <span id="val-grayscale">0%</span></label><input type="range" id="filter-grayscale" min="0" max="100" value="0"></div>
+            <div class="filter-row"><label>Инверсия <span id="val-invert">0%</span></label><input type="range" id="filter-invert" min="0" max="100" value="0"></div>
+          </div>
+          <button class="btn btn-sm btn-block" id="btn-reset-filters" style="margin-top:8px">Сбросить</button>
+        </div>
+      </div>
+
+      <div class="panel-section collapsed" id="section-layers">
+        <div class="panel-header" data-section="section-layers">
+          <span class="panel-title">📑 Слои</span>
+          <span class="panel-arrow">▾</span>
+        </div>
+        <div class="panel-body">
+          <div class="layer-actions">
+            <button class="btn btn-sm" id="btn-add-layer" title="Добавить слой">+</button>
+            <button class="btn btn-sm" id="btn-dup-layer" title="Дублировать">📋</button>
+            <button class="btn btn-sm btn-danger" id="btn-del-layer" title="Удалить">🗑</button>
+          </div>
+          <div class="layer-list" id="layer-list">
+            <div class="layer-empty">Нет слоёв</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section collapsed" id="section-templates">
+        <div class="panel-header" data-section="section-templates">
+          <span class="panel-title">💾 Шаблоны</span>
+          <span class="panel-arrow">▾</span>
+        </div>
+        <div class="panel-body">
+          <select class="input-field" id="template-select">
+            <option value="">— Выберите шаблон —</option>
+          </select>
+          <div class="template-actions">
+            <button class="btn btn-sm" id="btn-save-template">💾 Сохранить</button>
+            <button class="btn btn-sm btn-danger" id="btn-del-template" disabled>🗑 Удалить</button>
+          </div>
+          <div style="margin-top:8px">
+            <button class="btn btn-sm" id="btn-export-template">📤 Экспорт</button>
+            <button class="btn btn-sm" id="btn-import-template">📥 Импорт</button>
+            <input type="file" id="template-file-input" accept=".json" style="display:none">
+          </div>
         </div>
       </div>
     </aside>
