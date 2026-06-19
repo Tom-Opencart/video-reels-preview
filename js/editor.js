@@ -42,23 +42,18 @@ export function initEditor() {
 export function resizeCanvas() {
 	const pw = state.preset.width;
 	const ph = state.preset.height;
-	const cw = container.clientWidth - 16;
-	const ch = container.clientHeight - 16;
-
-	const scaleX = cw / pw;
-	const scaleY = ch / ph;
-	scaleToDisplay = Math.min(scaleX, scaleY);
-
-	displayW = Math.round(pw * scaleToDisplay * state.zoom);
-	displayH = Math.round(ph * scaleToDisplay * state.zoom);
 
 	canvas.width = Math.round(pw * dpr);
 	canvas.height = Math.round(ph * dpr);
-	canvas.style.width = displayW + 'px';
-	canvas.style.height = displayH + 'px';
+	canvas.style.width = '100%';
+	canvas.style.height = '100%';
 
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.scale(dpr, dpr);
+
+	displayW = container.clientWidth;
+	displayH = container.clientHeight;
+	scaleToDisplay = Math.min(displayW / pw, displayH / ph);
 
 	render();
 }
@@ -330,31 +325,32 @@ function hexToRgb(hex) {
 }
 
 /* ---- Zoom & Pan ---- */
-function setupZoomPan() {
-	canvas.addEventListener('wheel', (e) => {
-		if (!e.ctrlKey && !e.metaKey) return;
-		e.preventDefault();
-		const delta = e.deltaY > 0 ? -0.1 : 0.1;
-		state.zoom = Math.max(0.25, Math.min(5, state.zoom + delta));
-		resizeCanvas();
-		updateZoomBadge();
-	}, { passive: false });
-
-	canvas.addEventListener('dblclick', () => {
-		state.zoom = 1;
-		resizeCanvas();
-		updateZoomBadge();
-	});
-}
-
 let badgeTimer = null;
-function updateZoomBadge() {
+export function updateZoomBadge() {
 	const badge = document.getElementById('zoom-badge');
 	if (!badge) return;
 	badge.textContent = Math.round(state.zoom * 100) + '%';
 	badge.classList.add('visible');
 	clearTimeout(badgeTimer);
 	badgeTimer = setTimeout(() => badge.classList.remove('visible'), 1500);
+}
+
+function setupZoomPan() {
+	canvas.addEventListener('wheel', (e) => {
+		if (!e.ctrlKey && !e.metaKey) return;
+		e.preventDefault();
+		const delta = e.deltaY > 0 ? -0.1 : 0.1;
+		state.zoom = Math.max(0.25, Math.min(5, state.zoom + delta));
+		canvas.style.transform = `scale(${state.zoom})`;
+		canvas.style.transformOrigin = 'center center';
+		updateZoomBadge();
+	}, { passive: false });
+
+	canvas.addEventListener('dblclick', () => {
+		state.zoom = 1;
+		canvas.style.transform = 'scale(1)';
+		updateZoomBadge();
+	});
 }
 
 /* ---- Canvas mouse events placeholder ---- */

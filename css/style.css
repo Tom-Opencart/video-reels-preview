@@ -131,6 +131,7 @@ body {
   background: #e5e7eb;
   overflow: hidden;
   position: relative;
+  padding: 0;
 }
 #editor-canvas {
   display: block;
