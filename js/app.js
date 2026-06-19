@@ -75,11 +75,16 @@ mobileTabs.forEach(tab => {
 
 
 // Help modal
-document.getElementById('btn-help-templates').addEventListener('click', (e) => {
-	e.stopPropagation();
+function openHelp() {
 	const overlay = document.getElementById('help-overlay');
 	overlay.classList.add('visible');
 	document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('btn-help').addEventListener('click', openHelp);
+document.getElementById('btn-help-templates').addEventListener('click', (e) => {
+	e.stopPropagation();
+	openHelp();
 });
 
 document.getElementById('help-close').addEventListener('click', () => {

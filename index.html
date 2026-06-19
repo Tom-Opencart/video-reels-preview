@@ -10,6 +10,7 @@
   <header class="topbar">
     <a href="#" class="logo">Video <span>Reels Preview</span></a>
     <div class="topbar-actions">
+      <button class="btn btn-sm" id="btn-help" title="Справка">?</button>
       <button class="btn btn-sm" id="btn-undo" disabled title="Отменить (Ctrl+Z)">↩</button>
       <button class="btn btn-sm" id="btn-redo" disabled title="Повторить (Ctrl+Shift+Z)">↪</button>
       <button class="btn btn-primary btn-sm" id="btn-export" title="Экспорт (Ctrl+E)">⬇ Экспорт</button>
@@ -175,16 +176,57 @@
   <div class="help-overlay" id="help-overlay">
     <div class="help-modal">
       <button class="help-close" id="help-close">✕</button>
-      <h2>💾 Шаблоны</h2>
-      <p>Шаблон — это сохранённое состояние редактора: все слои, фильтры, фон и размер холста. Позволяет не настраивать обложку заново.</p>
-      <div class="help-steps">
-        <div class="help-step"><strong>💾 Сохранить</strong><span>Запоминает текущий макет (слои, фон, фильтры) в браузере. Максимум 20 шаблонов.</span></div>
-        <div class="help-step"><strong>📋 Выбрать</strong><span>Восстанавливает сохранённый макет. Просто выберите из списка — все слои и настройки вернутся.</span></div>
-        <div class="help-step"><strong>🗑 Удалить</strong><span>Убирает выбранный шаблон из списка.</span></div>
-        <div class="help-step"><strong>📤 Экспорт</strong><span>Скачивает все шаблоны как JSON-файл для переноса на другой компьютер.</span></div>
-        <div class="help-step"><strong>📥 Импорт</strong><span>Загружает шаблоны из JSON-файла (ранее экспортированного).</span></div>
+      <h2>📖 Справка</h2>
+
+      <div class="help-section">
+        <h3>📥 Источник видео</h3>
+        <p>Выберите вкладку под тип источника: <strong>Авто</strong> (определит сам), <strong>YouTube</strong>, <strong>Rutube</strong> или <strong>MP4/WebM</strong>. Вставьте ссылку и нажмите «Загрузить». Или перетащите видеофайл в область загрузки.</p>
       </div>
-      <p class="help-tip">💡 Пример: сделали обложку с текстом и логотипом → сохранили как «Мой стиль» → в следующий раз выбрали из списка и заменили только кадр.</p>
+
+      <div class="help-section">
+        <h3>🎥 Видео и захват</h3>
+        <p>Плеер появляется после загрузки видео. Выберите момент на таймлайне, формат (PNG/JPEG/WebP) и нажмите <strong>«Снять кадр»</strong>. Размер холста автоматически подстроится под видео.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>🔧 Инструменты</h3>
+        <div class="help-steps">
+          <div class="help-step"><strong>↖ Выделение</strong><span>Клик — выбрать, тянуть — переместить. Горячая клавиша: <kbd>V</kbd></span></div>
+          <div class="help-step"><strong>T Текст</strong><span>Клик по холсту — создать надпись. Двойной клик — редактировать. <kbd>T</kbd></span></div>
+          <div class="help-step"><strong>▭ Прямоугольник</strong><span>Зажать и тянуть — нарисовать. <kbd>R</kbd></span></div>
+          <div class="help-step"><strong>○ Круг</strong><span>Зажать и тянуть — нарисовать. <kbd>C</kbd></span></div>
+          <div class="help-step"><strong>→ Стрелка</strong><span>Зажать и тянуть — стрелка с наконечником. <kbd>A</kbd></span></div>
+          <div class="help-step"><strong>╱ Линия</strong><span>Зажать и тянуть — прямая линия. <kbd>L</kbd></span></div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>🎨 Фильтры</h3>
+        <p>Применяются к изображению кадра: яркость, контраст, насыщенность, размытие, сепия, ч/б, инверсия. Каждый — ползунок с предпросмотром в реальном времени. Кнопка «Сбросить» возвращает значения по умолчанию.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>📑 Слои</h3>
+        <p>Каждый элемент (кадр, текст, фигура) — отдельный слой. Слои можно перетаскивать для изменения порядка, скрывать (👁) и блокировать (🔒). Кнопки: <strong>+</strong> добавить, <strong>📋</strong> дублировать, <strong>🗑</strong> удалить.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>💾 Шаблоны</h3>
+        <p>Шаблон сохраняет все слои, фильтры и размер холста. <strong>Сохранить</strong> — запомнить текущий макет (до 20 шт.). <strong>Выбрать из списка</strong> — восстановить. <strong>Экспорт/Импорт</strong> — перенести шаблоны между устройствами через JSON-файл.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>⌨ Горячие клавиши</h3>
+        <div class="help-steps">
+          <div class="help-step"><strong><kbd>Ctrl+Z</kbd></strong><span>Отменить</span></div>
+          <div class="help-step"><strong><kbd>Ctrl+Shift+Z</kbd></strong><span>Повторить</span></div>
+          <div class="help-step"><strong><kbd>Ctrl+E</kbd></strong><span>Экспорт / Скачать</span></div>
+          <div class="help-step"><strong><kbd>Ctrl+колесо</kbd></strong><span>Зум</span></div>
+          <div class="help-step"><strong><kbd>Delete</kbd></strong><span>Удалить выделенный слой</span></div>
+          <div class="help-step"><strong><kbd>Esc</kbd></strong><span>Снять выделение / закрыть окна</span></div>
+          <div class="help-step"><strong><kbd>V T R C A L</kbd></strong><span>Переключение инструментов</span></div>
+        </div>
+      </div>
     </div>
   </div>
 

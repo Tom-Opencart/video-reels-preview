@@ -320,7 +320,7 @@ body {
   background: var(--bg-page);
   border-radius: 14px;
   padding: 28px 32px;
-  max-width: 480px;
+  max-width: 560px;
   width: 90%;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
   position: relative;
@@ -330,34 +330,54 @@ body {
 .help-modal h2 {
   font-size: 1.2rem;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
 }
-.help-modal p {
-  font-size: 0.88rem;
+.help-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.help-section:last-child { border-bottom: none; margin-bottom: 0; }
+.help-section h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.help-section p {
+  font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 16px;
+  margin: 0;
 }
 .help-steps {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
 }
 .help-step {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
 }
 .help-step strong {
   white-space: nowrap;
   color: var(--text-primary);
-  min-width: 110px;
+  min-width: 90px;
 }
 .help-step span {
   color: var(--text-secondary);
   line-height: 1.4;
+}
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
 }
 .help-tip {
   background: var(--accent-light);
