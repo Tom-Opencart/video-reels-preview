@@ -129,29 +129,25 @@ body {
   background: #f0f0f3;
 }
 
-/* ---- Video Mini (floating in canvas area) ---- */
-.video-mini {
+/* ---- Video Player (full-size in canvas area) ---- */
+.video-player {
   display: none;
   position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 420px;
-  max-width: 88%;
-  max-height: 40vh;
+  inset: 0;
   background: #000;
-  border-radius: 10px;
-  overflow: hidden;
-  aspect-ratio: 16/9;
-  z-index: 10;
-  border: 2px solid rgba(255,255,255,0.25);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  z-index: 5;
 }
-.video-mini.visible {
+.video-player.visible {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-player video,
+.video-player iframe {
+  width: 100%;
+  height: 100%;
   display: block;
-}
-.video-mini video, .video-mini iframe {
-  width: 100%; height: 100%; display: block;
+  object-fit: contain;
 }
 
 /* ---- Zoom Badge ---- */
