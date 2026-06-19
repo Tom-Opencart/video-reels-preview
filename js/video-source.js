@@ -58,10 +58,12 @@ function switchSourceTab(type) {
 
 function hideVideoPlayer() {
 	const mini = document.getElementById('video-mini');
-	if (mini) mini.innerHTML = '';
+	if (mini) { mini.innerHTML = ''; mini.classList.remove('visible'); }
 }
 
 function showVideoPlayer() {
+	const mini = document.getElementById('video-mini');
+	if (mini) mini.classList.add('visible');
 	if (window.openSection) window.openSection('section-video');
 }
 

@@ -178,14 +178,24 @@ body {
 }
 #editor-canvas.tool-select { cursor: default; }
 
-/* ---- Video Mini (in left panel) ---- */
+/* ---- Video Mini (floating in canvas area) ---- */
 .video-mini {
-  width: 100%;
+  display: none;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  max-width: 90%;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
   aspect-ratio: 16/9;
-  margin-bottom: 8px;
+  z-index: 10;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.video-mini.visible {
+  display: block;
 }
 .video-mini video, .video-mini iframe {
   width: 100%; height: 100%; display: block;
