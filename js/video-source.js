@@ -7,6 +7,17 @@ const playerBar = () => document.getElementById('player-bar');
 
 let currentSource = null;
 
+function updateWrapperAspect() {
+  const vw = videoWrapper();
+  if (!vw) return;
+  const ratio = state.preset.height / state.preset.width;
+  const containerW = document.getElementById('canvas-area')?.clientWidth || vw.parentElement?.clientWidth || 600;
+  const maxH = vw.parentElement?.clientHeight || window.innerHeight * 0.7;
+  let h = containerW * ratio;
+  if (h > maxH) h = maxH;
+  vw.style.height = h + 'px';
+}
+
 export function initVideoSource() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.src));
@@ -48,6 +59,10 @@ export function initVideoSource() {
   if (btnMute) btnMute.addEventListener('click', toggleMute);
   if (playerSeek) playerSeek.addEventListener('input', e => {
     player().currentTime = parseFloat(e.target.value);
+  });
+
+  window.addEventListener('preset:changed', () => {
+    updateWrapperAspect();
   });
 }
 
@@ -99,10 +114,12 @@ function loadYouTube(url) {
   if (!id) { toast('Не удалось извлечь ID YouTube', 'warning'); return; }
 
   currentSource = 'youtube';
-  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&modestbranding=1&autoplay=1" frameborder="0" allowfullscreen style="width:100%;height:100%;border:none"></iframe>`;
+  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&iv_load_policy=3&modestbranding=1&autoplay=1&enablejsapi=1" frameborder="0" allowfullscreen allow="autoplay" style="width:100%;height:100%;border:none"></iframe>`;
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
-  playerBar().style.display = 'none';
+  playerBar().style.display = 'flex';
+  updateWrapperAspect();
+  updatePlayBtn();
   toast('YouTube загружен');
 }
 
@@ -114,7 +131,9 @@ function loadRutube(url) {
   videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;border:none"></iframe>`;
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
-  playerBar().style.display = 'none';
+  playerBar().style.display = 'flex';
+  updateWrapperAspect();
+  updatePlayBtn();
   toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
 
@@ -126,6 +145,7 @@ function loadMp4Url(url) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
+  updateWrapperAspect();
   updatePlayBtn();
 }
 
@@ -141,6 +161,7 @@ function handleFile(file) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
+  updateWrapperAspect();
   updatePlayBtn();
   const size = (file.size / 1024 / 1024).toFixed(1);
   toast(`Загружено: ${file.name} (${size} МБ)`);
