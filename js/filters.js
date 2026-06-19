@@ -11,13 +11,13 @@ const DEFAULTS = {
 };
 
 const SLIDER_CONFIG = {
-  brightness: { min: 0, max: 200, unit: '%' },
-  contrast: { min: 0, max: 200, unit: '%' },
-  saturate: { min: 0, max: 200, unit: '%' },
-  blur: { min: 0, max: 20, unit: 'px' },
-  sepia: { min: 0, max: 100, unit: '%' },
-  grayscale: { min: 0, max: 100, unit: '%' },
-  invert: { min: 0, max: 100, unit: '%' }
+  brightness: { min: 0, max: 200, unit: '%', label: 'Яркость' },
+  contrast: { min: 0, max: 200, unit: '%', label: 'Контраст' },
+  saturate: { min: 0, max: 200, unit: '%', label: 'Насыщенность' },
+  blur: { min: 0, max: 20, unit: 'px', label: 'Размытие' },
+  sepia: { min: 0, max: 100, unit: '%', label: 'Сепия' },
+  grayscale: { min: 0, max: 100, unit: '%', label: 'Ч/б' },
+  invert: { min: 0, max: 100, unit: '%', label: 'Инверсия' }
 };
 
 export function initFilters() {
@@ -33,7 +33,7 @@ export function initFilters() {
     row.className = 'filter-row';
     
     const label = document.createElement('label');
-    label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    label.textContent = config.label || key;
     
     const input = document.createElement('input');
     input.type = 'range';

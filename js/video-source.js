@@ -53,7 +53,7 @@ function loadSource() {
   if (type === 'youtube') loadYouTube(url);
   else if (type === 'rutube') loadRutube(url);
   else if (type === 'direct') loadMp4Url(url);
-  else toast('Unrecognized URL', 'warning');
+  else toast('Не удалось определить тип ссылки', 'warning');
 }
 
 function detectSourceType(url) {
@@ -68,24 +68,24 @@ function loadYouTube(url) {
   const m1 = url.match(/[?&]v=([^&]+)/);
   const m2 = url.match(/youtu\.be\/([^?&]+)/);
   id = m1 ? m1[1] : m2 ? m2[1] : '';
-  if (!id) { toast('Cannot parse YouTube ID', 'warning'); return; }
+  if (!id) { toast('Не удалось извлечь ID YouTube', 'warning'); return; }
 
   currentSource = 'youtube';
   videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
   videoControls().style.display = 'none';
-  toast('YouTube loaded');
+  toast('YouTube загружен');
 }
 
 function loadRutube(url) {
   const m = url.match(/rutube\.ru\/video\/([^/?&]+)/);
-  if (!m) { toast('Cannot parse Rutube ID', 'warning'); return; }
+  if (!m) { toast('Не удалось извлечь ID Rutube', 'warning'); return; }
 
   currentSource = 'rutube';
   videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
   videoControls().style.display = 'none';
-  toast('Rutube loaded (CORS may limit capture)', 'warning');
+  toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
 
 function loadMp4Url(url) {
@@ -98,7 +98,7 @@ function loadMp4Url(url) {
 
 function handleFile(file) {
   if (!file || !file.type.startsWith('video/')) {
-    toast('Not a video file', 'warning');
+    toast('Это не видеофайл', 'warning');
     return;
   }
   currentSource = 'file';
@@ -107,7 +107,7 @@ function handleFile(file) {
   videoWrapper().style.display = 'block';
   videoControls().style.display = '';
   const size = (file.size / 1024 / 1024).toFixed(1);
-  toast(`Loaded: ${file.name} (${size} MB)`);
+  toast(`Загружено: ${file.name} (${size} МБ)`);
 }
 
 function onTimeUpdate() {

@@ -64,7 +64,7 @@ export async function exportImage() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast('Image exported!', 'success');
+    toast('Изображение скачано!', 'success');
   }, getMime(fmt), getQuality(fmt));
 }
 
@@ -75,9 +75,9 @@ export async function copyToClipboard() {
   try {
     const blob = await new Promise(resolve => offscreen.toBlob(resolve, 'image/png'));
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    toast('Copied to clipboard!', 'success');
+    toast('Скопировано в буфер обмена!', 'success');
   } catch (err) {
-    toast('Clipboard copy failed: ' + err.message, 'error');
+    toast('Ошибка копирования: ' + err.message, 'error');
   }
 }
 

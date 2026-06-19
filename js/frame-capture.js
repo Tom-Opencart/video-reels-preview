@@ -12,7 +12,7 @@ async function captureFrame() {
   const wrapper = document.getElementById('video-wrapper');
 
   if (!source) {
-    toast('No video loaded', 'warning');
+    toast('Видео не загружено', 'warning');
     return;
   }
 
@@ -25,7 +25,7 @@ async function captureFrame() {
   }
 
   if (!dataURL) {
-    toast('Capture failed', 'warning');
+    toast('Не удалось захватить кадр', 'warning');
     return;
   }
 
@@ -38,7 +38,7 @@ async function captureFrame() {
   });
 
   wrapper.style.display = 'none';
-  toast('Frame captured');
+  toast('Кадр захвачен');
 }
 
 function captureVideoFrame() {

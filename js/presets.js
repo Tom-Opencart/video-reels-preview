@@ -34,9 +34,9 @@ function applyCustomSize() {
   const w = parseInt(customW.value, 10);
   const h = parseInt(customH.value, 10);
   if (!Number.isFinite(w) || !Number.isFinite(h) || w < 100 || h < 100 || w > 4096 || h > 4096) {
-    toast('Size must be 100–4096', 'error');
+    toast('Размер должен быть 100–4096', 'error');
     return;
   }
-  state.preset = { name: 'Custom', width: w, height: h };
+  state.preset = { name: 'Свой размер', width: w, height: h };
   window.dispatchEvent(new Event('preset:changed'));
 }

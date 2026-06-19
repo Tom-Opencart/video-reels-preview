@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Reels Preview</title>
+  <title>Video Reels Preview — Генератор превью из видео</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,9 +11,9 @@
   <header class="topbar">
     <div class="topbar-logo">Video <span>Reels Preview</span></div>
     <div class="topbar-actions">
-      <button class="btn btn-secondary btn-sm" id="btn-undo" disabled>Undo</button>
-      <button class="btn btn-secondary btn-sm" id="btn-redo" disabled>Redo</button>
-      <button class="btn btn-primary btn-sm" id="btn-export">Export</button>
+      <button class="btn btn-secondary btn-sm" id="btn-undo" disabled>↩ Отменить</button>
+      <button class="btn btn-secondary btn-sm" id="btn-redo" disabled>↪ Повторить</button>
+      <button class="btn btn-primary btn-sm" id="btn-export">⬇ Экспорт</button>
     </div>
   </header>
 
@@ -23,25 +23,25 @@
     <aside class="panel-left" id="panel-left">
 
       <div class="panel-section">
-        <div class="panel-title">Source</div>
+        <div class="panel-title">Источник</div>
 
         <div class="source-tabs">
-          <button class="tab-btn active" data-src="auto">Auto</button>
-          <button class="tab-btn" data-src="youtube">YouTube</button>
-          <button class="tab-btn" data-src="rutube">Rutube</button>
-          <button class="tab-btn" data-src="file">File</button>
+          <button class="tab-btn active" data-src="auto">🔍 Авто</button>
+          <button class="tab-btn" data-src="youtube">▶ YouTube</button>
+          <button class="tab-btn" data-src="rutube">▶ Rutube</button>
+          <button class="tab-btn" data-src="file">▶ Файл</button>
         </div>
 
         <div class="input-group active" id="src-auto">
           <div class="source-input-row">
-            <input type="text" id="source-url" placeholder="Paste URL...">
-            <button class="btn btn-primary btn-sm" id="btn-load">Load</button>
+            <input type="text" id="source-url" placeholder="Вставьте ссылку...">
+            <button class="btn btn-primary btn-sm" id="btn-load">Загрузить</button>
           </div>
         </div>
 
         <div class="input-group" id="src-file">
           <div class="drop-zone" id="dropzone">
-            <p>Drop video or click to select</p>
+            <p>Перетащите видео или нажмите для выбора</p>
             <p class="hint">MP4, WebM, MOV...</p>
             <input type="file" id="file-input" accept="video/*">
           </div>
@@ -55,64 +55,64 @@
             <option value="jpeg">JPEG 90%</option>
             <option value="webp">WebP</option>
           </select>
-          <button class="btn btn-primary btn-sm" id="btn-capture">Capture</button>
+          <button class="btn btn-primary btn-sm" id="btn-capture">📸 Снять кадр</button>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-title">Tools</div>
+        <div class="panel-title">Инструменты</div>
         <div class="tool-grid">
           <button class="tool-btn active" data-tool="select">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
-            Select
+            Выделение
           </button>
           <button class="tool-btn" data-tool="text">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
-            Text
+            Текст
           </button>
           <button class="tool-btn" data-tool="rect">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-            Rect
+            Прямоугольник
           </button>
           <button class="tool-btn" data-tool="circle">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
-            Circle
+            Круг
           </button>
           <button class="tool-btn" data-tool="arrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19L19 5M19 5v10M19 5H9"/></svg>
-            Arrow
+            Стрелка
           </button>
           <button class="tool-btn" data-tool="line">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
-            Line
+            Линия
           </button>
         </div>
       </div>
 
       <div class="panel-section" id="props-panel">
-        <div class="panel-title">Properties</div>
+        <div class="panel-title">Свойства</div>
         <div id="props-content"></div>
       </div>
 
       <div class="panel-section" id="filters-panel">
-        <div class="panel-title">Filters</div>
+        <div class="panel-title">Фильтры</div>
         <div id="filters-content"></div>
-        <button class="btn btn-secondary btn-sm" id="btn-reset-filters" style="margin-top:8px;width:100%">Reset Filters</button>
+        <button class="btn btn-secondary btn-sm" id="btn-reset-filters" style="margin-top:8px;width:100%">Сбросить фильтры</button>
       </div>
 
       <div class="panel-section">
-        <div class="panel-title">Presets</div>
+        <div class="panel-title">Пресеты</div>
         <select id="preset-select" style="width:100%">
           <option value="shorts">YouTube Shorts 9:16</option>
           <option value="square">Instagram 1:1</option>
           <option value="youtube">YouTube 16:9</option>
-          <option value="custom">Custom</option>
+          <option value="custom">Свой размер</option>
         </select>
         <div class="custom-size-inputs" id="custom-size" style="display:none">
-          <input type="number" id="custom-w" placeholder="W" min="1">
+          <input type="number" id="custom-w" placeholder="Ш" min="1">
           <span>×</span>
-          <input type="number" id="custom-h" placeholder="H" min="1">
-          <button class="btn btn-secondary btn-sm" id="btn-apply-size">Apply</button>
+          <input type="number" id="custom-h" placeholder="В" min="1">
+          <button class="btn btn-secondary btn-sm" id="btn-apply-size">OK</button>
         </div>
       </div>
 
@@ -133,23 +133,23 @@
     <aside class="panel-right" id="panel-right">
 
       <div class="panel-section">
-        <div class="panel-title">Layers</div>
+        <div class="panel-title">Слои</div>
         <div class="layer-actions">
-          <button class="btn btn-secondary btn-sm" id="btn-add-layer">+ Add</button>
-          <button class="btn btn-secondary btn-sm" id="btn-dup-layer">Dup</button>
-          <button class="btn btn-danger btn-sm" id="btn-del-layer">Del</button>
+          <button class="btn btn-secondary btn-sm" id="btn-add-layer">+ Добавить</button>
+          <button class="btn btn-secondary btn-sm" id="btn-dup-layer">📋 Дубль</button>
+          <button class="btn btn-danger btn-sm" id="btn-del-layer">🗑 Удалить</button>
         </div>
         <div id="layer-list"></div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-title">Templates</div>
+        <div class="panel-title">Шаблоны</div>
         <div class="template-row">
           <select id="template-select">
-            <option value="">— none —</option>
+            <option value="">— нет —</option>
           </select>
-          <button class="btn btn-secondary btn-sm" id="btn-save-template">Save</button>
-          <button class="btn btn-danger btn-sm" id="btn-del-template">Del</button>
+          <button class="btn btn-secondary btn-sm" id="btn-save-template">💾 Сохранить</button>
+          <button class="btn btn-danger btn-sm" id="btn-del-template">🗑 Удалить</button>
         </div>
       </div>
 
@@ -162,7 +162,7 @@
 
   <div id="preview-overlay">
     <button class="preview-close" id="preview-close">✕</button>
-    <img id="preview-img" alt="Preview">
+    <img id="preview-img" alt="Предпросмотр">
     <span id="preview-info"></span>
   </div>
 

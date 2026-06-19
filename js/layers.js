@@ -10,7 +10,7 @@ const TYPE_ICONS = {
 };
 
 const TYPE_NAMES = {
-  text: 'Text', rect: 'Rectangle', circle: 'Circle', arrow: 'Arrow', line: 'Line', image: 'Image',
+  text: 'Текст', rect: 'Прямоугольник', circle: 'Круг', arrow: 'Стрелка', line: 'Линия', image: 'Изображение',
 };
 
 export function initLayers() {
@@ -48,7 +48,7 @@ export function addLayer(type, data) {
 function getDefaultProps(type) {
   switch (type) {
     case 'text':
-      return { text: 'Text', fontSize: 48, fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 'bold', color: '#ffffff', background: 'rgba(0,0,0,0.4)', textAlign: 'left', width: 400, height: 60 };
+      return { text: 'Текст', fontSize: 48, fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 'bold', color: '#ffffff', background: 'rgba(0,0,0,0.4)', textAlign: 'left', width: 400, height: 60 };
     case 'rect':
       return { fill: '#2563eb', stroke: '#1d4ed8', strokeWidth: 2, borderRadius: 0 };
     case 'circle':
@@ -131,13 +131,13 @@ export function updateLayerList() {
     const visBtn = document.createElement('button');
     visBtn.className = 'layer-vis';
     visBtn.textContent = layer.visible === false ? '👁‍🗨' : '👁';
-    visBtn.title = 'Visibility';
+    visBtn.title = 'Видимость';
     visBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleVisibility(layer.id); });
 
     const lockBtn = document.createElement('button');
     lockBtn.className = 'layer-lock';
     lockBtn.textContent = layer.locked ? '🔒' : '🔓';
-    lockBtn.title = 'Lock';
+    lockBtn.title = 'Блокировка';
     lockBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLock(layer.id); });
 
     item.appendChild(icon);

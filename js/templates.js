@@ -18,7 +18,7 @@ export function initTemplates() {
   updateTemplateSelect();
 
   btnSave.addEventListener('click', () => {
-    const name = prompt('Template name:');
+    const name = prompt('Название шаблона:');
     if (name && name.trim()) saveTemplate(name.trim());
   });
 
@@ -33,7 +33,7 @@ export function initTemplates() {
 
 function saveTemplate(name) {
   if (templates.length >= MAX_TEMPLATES) {
-    toast('Max 20 templates', 'error');
+    toast('Максимум 20 шаблонов', 'error');
     return;
   }
   const tpl = {
@@ -45,7 +45,7 @@ function saveTemplate(name) {
   templates.push(tpl);
   persist();
   updateTemplateSelect();
-  toast('Template saved', 'success');
+  toast('Шаблон сохранён', 'success');
 }
 
 function loadTemplate(id) {
@@ -53,14 +53,14 @@ function loadTemplate(id) {
   if (!tpl) return;
   restoreState(tpl.state);
   document.dispatchEvent(new CustomEvent('history:restored'));
-  toast('Template loaded', 'success');
+  toast('Шаблон загружен', 'success');
 }
 
 function deleteTemplate(id) {
   templates = templates.filter(t => t.id !== id);
   persist();
   updateTemplateSelect();
-  toast('Template deleted', 'info');
+  toast('Шаблон удалён', 'info');
 }
 
 function updateTemplateSelect() {
