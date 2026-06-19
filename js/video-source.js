@@ -69,7 +69,7 @@ export function loadYouTube(url) {
 
 	ytId = match[1];
 	const playerEl = document.getElementById('video-player');
-	playerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+	playerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
 	showVideoPlayer();
 
 	const slider = document.getElementById('time-slider');
@@ -99,7 +99,7 @@ export function loadRutube(url) {
 
 export function loadMp4Url(url) {
 	const playerEl = document.getElementById('video-player');
-	playerEl.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
+	playerEl.innerHTML = '<video id="player" crossorigin="anonymous"></video>';
 
 	const player = document.getElementById('player');
 	player.src = url;
@@ -126,7 +126,7 @@ export function handleFile(file) {
 	document.getElementById('file-info').textContent = `📎 ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
 
 	const playerEl = document.getElementById('video-player');
-	playerEl.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
+	playerEl.innerHTML = '<video id="player" crossorigin="anonymous"></video>';
 
 	const player = document.getElementById('player');
 	player.src = URL.createObjectURL(file);
