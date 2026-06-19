@@ -10,9 +10,10 @@ let currentSource = null;
 function updateWrapperAspect() {
   const vw = videoWrapper();
   if (!vw) return;
+  const area = document.querySelector('.canvas-area');
   const ratio = state.preset.height / state.preset.width;
-  const containerW = document.getElementById('canvas-area')?.clientWidth || vw.parentElement?.clientWidth || 600;
-  const maxH = vw.parentElement?.clientHeight || window.innerHeight * 0.7;
+  const containerW = area?.clientWidth || vw.parentElement?.clientWidth || 600;
+  const maxH = area?.clientHeight || window.innerHeight * 0.7;
   let h = containerW * ratio;
   if (h > maxH) h = maxH;
   vw.style.height = h + 'px';
