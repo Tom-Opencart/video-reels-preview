@@ -45,6 +45,12 @@
           <span class="panel-arrow">▾</span>
         </div>
         <div class="panel-body">
+          <div class="video-controls-row">
+            <button class="btn btn-sm" id="btn-play" title="Play/Pause (Пробел)">▶</button>
+            <button class="btn btn-sm" id="btn-frame-prev" title="Кадр назад">⏪</button>
+            <button class="btn btn-sm" id="btn-frame-next" title="Кадр вперёд">⏩</button>
+            <span class="frame-step-hint">← →</span>
+          </div>
           <div class="time-control">
             <span class="time-label" id="time-display">0:00 / 0:00</span>
             <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1">

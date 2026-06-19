@@ -29,9 +29,85 @@ export function initVideoSource() {
 
 	document.getElementById('btn-capture').addEventListener('click', capture);
 	document.getElementById('time-slider').addEventListener('input', function () {
-		const player = document.getElementById('player');
-		if (player) player.currentTime = parseFloat(this.value);
+		seekVideo(parseFloat(this.value));
 	});
+
+	document.getElementById('btn-play').addEventListener('click', togglePlay);
+	document.getElementById('btn-frame-prev').addEventListener('click', () => stepFrame(-1));
+	document.getElementById('btn-frame-next').addEventListener('click', () => stepFrame(1));
+
+	document.addEventListener('keydown', (e) => {
+		if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+		if (e.code === 'Space') {
+			e.preventDefault();
+			togglePlay();
+		}
+		if (e.code === 'ArrowLeft') { e.preventDefault(); stepFrame(-1); }
+		if (e.code === 'ArrowRight') { e.preventDefault(); stepFrame(1); }
+	});
+}
+
+function getVideoElement() {
+	return document.getElementById('player');
+}
+
+function getYtIframe() {
+	return document.querySelector('#video-player iframe[src*="youtube"]');
+}
+
+function togglePlay() {
+	const video = getVideoElement();
+	const ytFrame = getYtIframe();
+
+	if (video) {
+		if (video.paused) { video.play(); updatePlayIcon(true); }
+		else { video.pause(); updatePlayIcon(false); }
+	} else if (ytFrame) {
+		const btn = document.getElementById('btn-play');
+		const isPlaying = btn.dataset.playing === 'true';
+		const cmd = isPlaying ? 'pauseVideo' : 'playVideo';
+		ytFrame.contentWindow.postMessage(JSON.stringify({ event: 'command', func: cmd, args: [] }), '*');
+		updatePlayIcon(!isPlaying);
+	}
+}
+
+function updatePlayIcon(playing) {
+	const btn = document.getElementById('btn-play');
+	if (btn) {
+		btn.textContent = playing ? '⏸' : '▶';
+		btn.dataset.playing = playing;
+	}
+}
+
+function seekVideo(time) {
+	const video = getVideoElement();
+	const ytFrame = getYtIframe();
+
+	if (video) {
+		video.currentTime = time;
+	} else if (ytFrame) {
+		ytFrame.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'seekTo', args: [time, true] }), '*');
+	}
+
+	const slider = document.getElementById('time-slider');
+	if (slider) slider.value = time;
+}
+
+function stepFrame(dir) {
+	const video = getVideoElement();
+	const ytFrame = getYtIframe();
+	const step = 1 / 30;
+
+	if (video) {
+		video.currentTime = Math.max(0, video.currentTime + dir * step);
+		updateTimeDisplay();
+	} else if (ytFrame) {
+		const slider = document.getElementById('time-slider');
+		if (slider) {
+			const newTime = Math.max(0, parseFloat(slider.value) + dir * step);
+			seekVideo(newTime);
+		}
+	}
 }
 
 function hideVideoPlayer() {
@@ -74,8 +150,9 @@ export function loadYouTube(url) {
 
 	const slider = document.getElementById('time-slider');
 	const timeDisp = document.getElementById('time-display');
-	if (slider) slider.style.display = 'none';
-	if (timeDisp) timeDisp.textContent = 'YouTube превью';
+	if (slider) { slider.max = 600; slider.value = 0; slider.style.display = ''; }
+	if (timeDisp) timeDisp.textContent = '0:00 / --:--';
+	updatePlayIcon(true);
 
 	toast('YouTube видео загружено', 'success');
 }
@@ -106,16 +183,17 @@ export function loadMp4Url(url) {
 	player.addEventListener('loadedmetadata', () => {
 		playerDuration = player.duration;
 		const slider = document.getElementById('time-slider');
-		if (slider) { slider.max = playerDuration; slider.value = 0; }
+		if (slider) { slider.max = playerDuration; slider.value = 0; slider.style.display = ''; }
 		updateTimeDisplay();
+		updatePlayIcon(true);
 	});
 	player.addEventListener('timeupdate', updateTimeDisplay);
+	player.addEventListener('play', () => updatePlayIcon(true));
+	player.addEventListener('pause', () => updatePlayIcon(false));
+	player.addEventListener('ended', () => updatePlayIcon(false));
 	player.addEventListener('error', () => toast('Ошибка загрузки видео', 'error'));
 
 	showVideoPlayer();
-
-	const slider = document.getElementById('time-slider');
-	if (slider) slider.style.display = '';
 
 	toast('Видео загружается...', 'info');
 }
@@ -133,10 +211,14 @@ export function handleFile(file) {
 	player.addEventListener('loadedmetadata', () => {
 		playerDuration = player.duration;
 		const slider = document.getElementById('time-slider');
-		if (slider) { slider.max = playerDuration; slider.value = 0; }
+		if (slider) { slider.max = playerDuration; slider.value = 0; slider.style.display = ''; }
 		updateTimeDisplay();
+		updatePlayIcon(true);
 	});
 	player.addEventListener('timeupdate', updateTimeDisplay);
+	player.addEventListener('play', () => updatePlayIcon(true));
+	player.addEventListener('pause', () => updatePlayIcon(false));
+	player.addEventListener('ended', () => updatePlayIcon(false));
 	player.addEventListener('error', () => toast('Ошибка загрузки видео', 'error'));
 
 	srcType = 'file';

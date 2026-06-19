@@ -211,6 +211,17 @@ body {
 .file-info { margin-top: 4px; font-size: 0.75rem; color: var(--success); font-family: var(--font-mono); }
 
 /* ---- Time Control ---- */
+.video-controls-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.frame-step-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
 .time-control { margin-bottom: 8px; }
 .time-control input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .time-label {
