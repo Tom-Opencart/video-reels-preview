@@ -1,5 +1,4 @@
 import { state } from './state.js';
-import { dispatch } from './events.js';
 
 const DEFAULTS = {
   brightness: 100,
@@ -57,7 +56,7 @@ export function initFilters() {
       const display = e.target.valueDisplay;
       display.textContent = `${value}${e.target.config.unit}`;
       
-      dispatch('filters:changed');
+      window.dispatchEvent(new CustomEvent('filters:changed'));
     });
     
     row.appendChild(label);
@@ -88,5 +87,5 @@ export function resetFilters() {
     }
   });
   
-  dispatch('filters:changed');
+  window.dispatchEvent(new CustomEvent('filters:changed'));
 }

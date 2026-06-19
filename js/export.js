@@ -2,15 +2,7 @@
 
 import { state } from './state.js';
 import { renderLayer } from './editor.js';
-
-function showToast(msg, type) {
-  const el = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'info');
-  t.textContent = msg;
-  el.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
+import { toast } from './utils.js';
 
 function preloadImages() {
   const promises = state.layers.map(layer => {
@@ -58,7 +50,7 @@ function getQuality(fmt) {
   return undefined;
 }
 
-async function exportImage() {
+export async function exportImage() {
   await preloadImages();
   const fmt = document.getElementById('fmt').value;
   const offscreen = renderToOffscreen();
@@ -72,20 +64,20 @@ async function exportImage() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    showToast('Image exported!', 'success');
+    toast('Image exported!', 'success');
   }, getMime(fmt), getQuality(fmt));
 }
 
-async function copyToClipboard() {
+export async function copyToClipboard() {
   await preloadImages();
   const offscreen = renderToOffscreen();
 
   try {
     const blob = await new Promise(resolve => offscreen.toBlob(resolve, 'image/png'));
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    showToast('Copied to clipboard!', 'success');
+    toast('Copied to clipboard!', 'success');
   } catch (err) {
-    showToast('Clipboard copy failed: ' + err.message, 'error');
+    toast('Clipboard copy failed: ' + err.message, 'error');
   }
 }
 
@@ -112,7 +104,7 @@ function openPreview() {
   });
 }
 
-function closePreview() {
+export function closePreview() {
   const overlay = document.getElementById('preview-overlay');
   overlay.classList.remove('visible');
   document.body.style.overflow = '';
@@ -135,22 +127,4 @@ export function initExport() {
   if (previewClose) {
     previewClose.addEventListener('click', closePreview);
   }
-
-  window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      const overlay = document.getElementById('preview-overlay');
-      if (overlay && overlay.classList.contains('visible')) {
-        closePreview();
-      }
-    }
-  });
-
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
-      if (window.getSelection && window.getSelection().toString()) return;
-      if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
-      e.preventDefault();
-      copyToClipboard();
-    }
-  });
 }

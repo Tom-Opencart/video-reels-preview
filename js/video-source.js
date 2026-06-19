@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { toast } from './utils.js';
 
 const player = () => document.getElementById('player');
 const videoWrapper = () => document.getElementById('video-wrapper');
@@ -52,7 +53,7 @@ function loadSource() {
   if (type === 'youtube') loadYouTube(url);
   else if (type === 'rutube') loadRutube(url);
   else if (type === 'direct') loadMp4Url(url);
-  else showToast('Unrecognized URL', 'warning');
+  else toast('Unrecognized URL', 'warning');
 }
 
 function detectSourceType(url) {
@@ -67,24 +68,24 @@ function loadYouTube(url) {
   const m1 = url.match(/[?&]v=([^&]+)/);
   const m2 = url.match(/youtu\.be\/([^?&]+)/);
   id = m1 ? m1[1] : m2 ? m2[1] : '';
-  if (!id) { showToast('Cannot parse YouTube ID', 'warning'); return; }
+  if (!id) { toast('Cannot parse YouTube ID', 'warning'); return; }
 
   currentSource = 'youtube';
   videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
   videoControls().style.display = 'none';
-  showToast('YouTube loaded');
+  toast('YouTube loaded');
 }
 
 function loadRutube(url) {
   const m = url.match(/rutube\.ru\/video\/([^/?&]+)/);
-  if (!m) { showToast('Cannot parse Rutube ID', 'warning'); return; }
+  if (!m) { toast('Cannot parse Rutube ID', 'warning'); return; }
 
   currentSource = 'rutube';
   videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
   videoControls().style.display = 'none';
-  showToast('Rutube loaded (CORS may limit capture)', 'warning');
+  toast('Rutube loaded (CORS may limit capture)', 'warning');
 }
 
 function loadMp4Url(url) {
@@ -97,7 +98,7 @@ function loadMp4Url(url) {
 
 function handleFile(file) {
   if (!file || !file.type.startsWith('video/')) {
-    showToast('Not a video file', 'warning');
+    toast('Not a video file', 'warning');
     return;
   }
   currentSource = 'file';
@@ -106,7 +107,7 @@ function handleFile(file) {
   videoWrapper().style.display = 'block';
   videoControls().style.display = '';
   const size = (file.size / 1024 / 1024).toFixed(1);
-  showToast(`Loaded: ${file.name} (${size} MB)`);
+  toast(`Loaded: ${file.name} (${size} MB)`);
 }
 
 function onTimeUpdate() {
@@ -124,15 +125,6 @@ function fmtTime(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function showToast(msg, type) {
-  const el = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'info');
-  t.textContent = msg;
-  el.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
 }
 
 export function getCurrentSource() { return currentSource; }

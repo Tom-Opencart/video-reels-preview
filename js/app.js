@@ -1,11 +1,12 @@
 import { state } from './state.js';
 import { initEditor } from './editor.js';
-import { initTools } from './tools.js';
-import { initLayers } from './layers.js';
+import { initTools, setActiveTool } from './tools.js';
+import { initLayers, duplicateLayer, removeLayer } from './layers.js';
 import { initFilters } from './filters.js';
 import { initPresets } from './presets.js';
 import { initTemplates } from './templates.js';
-import { initExport } from './export.js';
+import { initExport, exportImage, closePreview, copyToClipboard } from './export.js';
+import { initHistory, undo, redo } from './history.js';
 import { initVideoSource } from './video-source.js';
 import { initFrameCapture } from './frame-capture.js';
 
@@ -16,6 +17,7 @@ initFilters();
 initPresets();
 initTemplates();
 initExport();
+initHistory();
 initVideoSource();
 initFrameCapture();
 
@@ -48,3 +50,60 @@ if (mobileBar) {
     }
   });
 }
+
+const TOOL_SHORTCUTS = { v: 'select', t: 'text', r: 'rect', c: 'circle', a: 'arrow', l: 'line' };
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' ||
+      e.target.tagName === 'SELECT' || e.target.isContentEditable) {
+    if (e.key === 'Escape') e.target.blur();
+    if (e.key === 'Enter' && !e.shiftKey) e.target.blur();
+    return;
+  }
+
+  const ctrl = e.ctrlKey || e.metaKey;
+
+  if (!ctrl) {
+    const key = e.key.toLowerCase();
+    if (TOOL_SHORTCUTS[key]) {
+      e.preventDefault();
+      setActiveTool(TOOL_SHORTCUTS[key]);
+    }
+  }
+
+  if (ctrl) {
+    switch(e.key.toLowerCase()) {
+      case 'z':
+        e.preventDefault();
+        if (e.shiftKey) redo(); else undo();
+        break;
+      case 'd':
+        e.preventDefault();
+        if (state.selectedId) duplicateLayer(state.selectedId);
+        break;
+      case 'e':
+        e.preventDefault();
+        exportImage();
+        break;
+      case 'c':
+        if (window.getSelection && window.getSelection().toString()) return;
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
+        e.preventDefault();
+        copyToClipboard();
+        break;
+    }
+  }
+
+  if (e.key === 'Delete' && state.selectedId) {
+    removeLayer(state.selectedId);
+  }
+
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('preview-overlay');
+    if (overlay && overlay.classList.contains('visible')) {
+      closePreview();
+    } else if (state.selectedId) {
+      state.selectedId = null;
+    }
+  }
+});

@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { addLayer } from './layers.js';
 import { getCurrentSource, getPlayer } from './video-source.js';
+import { toast } from './utils.js';
 
 export function initFrameCapture() {
   document.getElementById('btn-capture').addEventListener('click', captureFrame);
@@ -11,7 +12,7 @@ async function captureFrame() {
   const wrapper = document.getElementById('video-wrapper');
 
   if (!source) {
-    showToast('No video loaded', 'warning');
+    toast('No video loaded', 'warning');
     return;
   }
 
@@ -24,7 +25,7 @@ async function captureFrame() {
   }
 
   if (!dataURL) {
-    showToast('Capture failed', 'warning');
+    toast('Capture failed', 'warning');
     return;
   }
 
@@ -37,7 +38,7 @@ async function captureFrame() {
   });
 
   wrapper.style.display = 'none';
-  showToast('Frame captured');
+  toast('Frame captured');
 }
 
 function captureVideoFrame() {
@@ -93,13 +94,4 @@ async function captureYouTubeThumb() {
 
 function videoWrapper() {
   return document.getElementById('video-wrapper');
-}
-
-function showToast(msg, type) {
-  const el = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'info');
-  t.textContent = msg;
-  el.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
 }

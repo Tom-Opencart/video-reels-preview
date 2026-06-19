@@ -1,6 +1,7 @@
 // js/presets.js — size presets
 
 import { state, PRESETS } from './state.js';
+import { toast } from './utils.js';
 
 let presetSelect, customSizeDiv, customW, customH, btnApply;
 
@@ -33,18 +34,9 @@ function applyCustomSize() {
   const w = parseInt(customW.value, 10);
   const h = parseInt(customH.value, 10);
   if (!Number.isFinite(w) || !Number.isFinite(h) || w < 100 || h < 100 || w > 4096 || h > 4096) {
-    showToast('Size must be 100–4096', 'error');
+    toast('Size must be 100–4096', 'error');
     return;
   }
   state.preset = { name: 'Custom', width: w, height: h };
   window.dispatchEvent(new Event('preset:changed'));
-}
-
-function showToast(msg, type) {
-  const el = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || 'info');
-  t.textContent = msg;
-  el.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
 }

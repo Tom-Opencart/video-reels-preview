@@ -20,8 +20,6 @@ let tempLayer = null;
 
 let isEditingText = false;
 
-const TOOL_SHORTCUTS = { v: 'select', t: 'text', r: 'rect', c: 'circle', a: 'arrow', l: 'line' };
-
 export function initTools() {
   canvas = getEditorExports().canvas;
 
@@ -29,28 +27,18 @@ export function initTools() {
     btn.addEventListener('click', () => setActiveTool(btn.dataset.tool));
   });
 
-  window.addEventListener('keydown', onKeyDown);
   canvas.addEventListener('mousedown', onCanvasMouseDown);
   window.addEventListener('mousemove', onCanvasMouseMove);
   window.addEventListener('mouseup', onCanvasMouseUp);
   canvas.addEventListener('dblclick', onCanvasDblClick);
 }
 
-function setActiveTool(tool) {
+export function setActiveTool(tool) {
   state.activeTool = tool;
   document.querySelectorAll('.tool-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tool === tool);
   });
   if (canvas) canvas.style.cursor = tool === 'select' ? '' : 'crosshair';
-}
-
-function onKeyDown(e) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
-  const key = e.key.toLowerCase();
-  if (TOOL_SHORTCUTS[key]) {
-    e.preventDefault();
-    setActiveTool(TOOL_SHORTCUTS[key]);
-  }
 }
 
 function getScale() {
