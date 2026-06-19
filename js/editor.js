@@ -78,8 +78,14 @@ export function render() {
 
 	ctx.clearRect(0, 0, w, h);
 
-	ctx.fillStyle = state.background;
-	ctx.fillRect(0, 0, w, h);
+	const hasImage = state.layers.some(l => l.visible && l.type === 'image');
+
+	if (hasImage) {
+		ctx.fillStyle = state.background;
+		ctx.fillRect(0, 0, w, h);
+	} else {
+		drawCheckerboard(w, h);
+	}
 
 	for (const layer of state.layers) {
 		if (!layer.visible) continue;
@@ -87,6 +93,21 @@ export function render() {
 	}
 
 	drawSelection();
+
+	const placeholder = document.getElementById('canvas-placeholder');
+	if (placeholder) {
+		placeholder.classList.toggle('hidden', state.layers.length > 0);
+	}
+}
+
+function drawCheckerboard(w, h) {
+	const size = 16;
+	for (let y = 0; y < h; y += size) {
+		for (let x = 0; x < w; x += size) {
+			ctx.fillStyle = ((x / size) + (y / size)) % 2 === 0 ? '#f0f0f0' : '#e0e0e0';
+			ctx.fillRect(x, y, size, size);
+		}
+	}
 }
 
 function renderLayer(layer) {

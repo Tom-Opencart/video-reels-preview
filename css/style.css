@@ -122,9 +122,35 @@ body {
 #editor-canvas {
   display: block;
   cursor: crosshair;
-  background: #000;
   box-shadow: 0 2px 16px rgba(0,0,0,0.25);
   border-radius: 2px;
+}
+
+/* ---- Canvas Placeholder ---- */
+.canvas-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.3s;
+}
+.canvas-placeholder.hidden {
+  opacity: 0;
+}
+.placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+.placeholder-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
 }
 #editor-canvas.tool-select { cursor: default; }
 
