@@ -108,10 +108,6 @@ function render() {
   ctx.scale(totalScale, totalScale);
   ctx.translate(-presetW / 2, -presetH / 2);
 
-  if (state.layers.length === 0) {
-    drawEmptyState(ctx, presetW, presetH);
-  }
-
   for (const layer of state.layers) {
     if (layer.visible === false) continue;
     renderLayer(ctx, layer);
@@ -123,6 +119,10 @@ function render() {
   }
 
   ctx.restore();
+
+  if (state.layers.length === 0) {
+    drawEmptyState(ctx, displayWidth, displayHeight);
+  }
 
   requestAnimationFrame(render);
 }
