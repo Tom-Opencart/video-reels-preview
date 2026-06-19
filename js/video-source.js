@@ -3,8 +3,7 @@ import { toast } from './utils.js';
 
 const player = () => document.getElementById('player');
 const videoWrapper = () => document.getElementById('video-wrapper');
-const videoControls = () => document.getElementById('video-controls');
-const videoHint = () => document.getElementById('video-hint');
+const playerBar = () => document.getElementById('player-bar');
 
 let currentSource = null;
 
@@ -26,17 +25,22 @@ export function initVideoSource() {
     if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
   });
 
-  document.getElementById('time-slider').addEventListener('input', e => seek(parseFloat(e.target.value)));
-  player().addEventListener('timeupdate', onTimeUpdate);
-
   const p = player();
-  p.addEventListener('click', () => {
-    if (p.paused) { p.play().catch(() => {}); toast('▶ Воспроизведение', 'info'); }
-    else { p.pause(); toast('⏸ Пауза', 'info'); }
+  p.addEventListener('timeupdate', onTimeUpdate);
+  p.addEventListener('play', () => updatePlayBtn());
+  p.addEventListener('pause', () => updatePlayBtn());
+  p.addEventListener('loadedmetadata', () => {
+    const seek = document.getElementById('player-seek');
+    seek.max = p.duration;
+    onTimeUpdate();
   });
-  p.addEventListener('dblclick', () => {
-    p.muted = !p.muted;
-    toast(p.muted ? '🔇 Звук выключен' : '🔊 Звук включён', 'info');
+
+  document.getElementById('btn-play').addEventListener('click', togglePlay);
+  document.getElementById('btn-rw').addEventListener('click', () => skip(-10));
+  document.getElementById('btn-ff').addEventListener('click', () => skip(10));
+  document.getElementById('btn-mute').addEventListener('click', toggleMute);
+  document.getElementById('player-seek').addEventListener('input', e => {
+    player().currentTime = parseFloat(e.target.value);
   });
 }
 
@@ -84,8 +88,7 @@ function loadYouTube(url) {
   currentSource = 'youtube';
   videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&modestbranding=1&autoplay=1" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
-  videoHint().style.display = '';
-  videoControls().style.display = 'none';
+  playerBar().style.display = 'none';
   toast('YouTube загружен');
 }
 
@@ -96,8 +99,7 @@ function loadRutube(url) {
   currentSource = 'rutube';
   videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
-  videoHint().style.display = '';
-  videoControls().style.display = 'none';
+  playerBar().style.display = 'none';
   toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
 
@@ -107,8 +109,8 @@ function loadMp4Url(url) {
   p.src = url;
   p.play().catch(() => {});
   videoWrapper().style.display = 'block';
-  videoHint().style.display = '';
-  videoControls().style.display = '';
+  playerBar().style.display = 'flex';
+  updatePlayBtn();
 }
 
 function handleFile(file) {
@@ -121,19 +123,45 @@ function handleFile(file) {
   p.src = URL.createObjectURL(file);
   p.play().catch(() => {});
   videoWrapper().style.display = 'block';
-  videoControls().style.display = '';
+  playerBar().style.display = 'flex';
+  updatePlayBtn();
   const size = (file.size / 1024 / 1024).toFixed(1);
   toast(`Загружено: ${file.name} (${size} МБ)`);
 }
 
-function onTimeUpdate() {
+function togglePlay() {
   const p = player();
-  document.getElementById('time-display').textContent = `${fmtTime(p.currentTime)} / ${fmtTime(p.duration)}`;
-  document.getElementById('time-slider').value = p.currentTime;
+  if (p.paused) p.play().catch(() => {});
+  else p.pause();
 }
 
-function seek(value) {
-  player().currentTime = value;
+function updatePlayBtn() {
+  const p = player();
+  const btn = document.getElementById('btn-play');
+  btn.textContent = p.paused ? '▶' : '⏸';
+}
+
+function skip(seconds) {
+  const p = player();
+  if (!p.duration) return;
+  p.currentTime = Math.max(0, Math.min(p.duration, p.currentTime + seconds));
+}
+
+function toggleMute() {
+  const p = player();
+  p.muted = !p.muted;
+  document.getElementById('btn-mute').textContent = p.muted ? '🔇' : '🔊';
+  toast(p.muted ? '🔇 Звук выключен' : '🔊 Звук включён', 'info');
+}
+
+function onTimeUpdate() {
+  const p = player();
+  if (!p.duration) return;
+  document.getElementById('player-time').textContent = `${fmtTime(p.currentTime)} / ${fmtTime(p.duration)}`;
+  const seek = document.getElementById('player-seek');
+  if (document.activeElement !== seek) {
+    seek.value = p.currentTime;
+  }
 }
 
 function fmtTime(sec) {
