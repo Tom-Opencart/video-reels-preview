@@ -6,6 +6,8 @@ import { initFilters } from './filters.js';
 import { initPresets } from './presets.js';
 import { initTemplates } from './templates.js';
 import { initExport } from './export.js';
+import { initVideoSource } from './video-source.js';
+import { initFrameCapture } from './frame-capture.js';
 
 initEditor();
 initTools();
@@ -14,3 +16,5 @@ initFilters();
 initPresets();
 initTemplates();
 initExport();
+initVideoSource();
+initFrameCapture();
