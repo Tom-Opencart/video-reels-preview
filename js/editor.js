@@ -40,6 +40,8 @@ export function initEditor() {
   window.addEventListener('mousemove', onCanvasMouseMove);
   window.addEventListener('mouseup', onCanvasMouseUp);
 
+  window.addEventListener('preset:changed', () => { _needsResize = true; render(); });
+
   render();
 }
 
