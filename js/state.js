@@ -13,7 +13,7 @@ export const state = {
     brightness: 100, contrast: 100, saturate: 100,
     blur: 0, sepia: 0, grayscale: 0, invert: 0,
   },
-  background: '#000000',
+  background: '#1a1a2e',
   selectedId: null,
   activeTool: 'select',
   zoom: 1,
