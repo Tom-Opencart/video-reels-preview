@@ -382,6 +382,17 @@ select {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.layer-item.drag-over { border-top: 2px solid var(--accent); }
+.layer-vis, .layer-lock {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.layer-vis:hover, .layer-lock:hover { opacity: 1; }
 
 /* ===== TEMPLATES ===== */
 .template-row {
