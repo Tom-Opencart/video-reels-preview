@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { render, getCanvas } from './editor.js';
+import { render, getCanvas, resizeCanvas } from './editor.js';
 import { addImageLayer } from './layers.js';
 
 let ytId = null, rtId = null;
@@ -183,22 +183,28 @@ function fmtTime(s) {
 	return `${m}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
 }
 
+function setPresetFromVideo(w, h) {
+	state.preset = { name: `${w}×${h}`, width: w, height: h };
+	resizeCanvas();
+}
+
 function capture() {
 	const player = document.getElementById('player');
 
 	if (srcType === 'file' && player && player.videoWidth) {
-		const canvas = document.createElement('canvas');
-		canvas.width = player.videoWidth;
-		canvas.height = player.videoHeight;
-		canvas.getContext('2d').drawImage(player, 0, 0);
+		const cvs = document.createElement('canvas');
+		cvs.width = player.videoWidth;
+		cvs.height = player.videoHeight;
+		cvs.getContext('2d').drawImage(player, 0, 0);
 
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 		img.onload = () => {
+			setPresetFromVideo(cvs.width, cvs.height);
 			addImageLayer(img, 'Кадр');
-			toast('Кадр захвачен! ' + canvas.width + '×' + canvas.height, 'success');
+			toast('Кадр захвачен! ' + cvs.width + '×' + cvs.height, 'success');
 		};
-		img.src = canvas.toDataURL();
+		img.src = cvs.toDataURL();
 	} else if (srcType === 'youtube' && ytId) {
 		const variants = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
 		let loaded = false;
@@ -209,6 +215,7 @@ function capture() {
 			img.onload = () => {
 				if (loaded || img.naturalWidth < 100) return;
 				loaded = true;
+				setPresetFromVideo(img.naturalWidth, img.naturalHeight);
 				addImageLayer(img, 'Кадр YouTube');
 				toast('Кадр захвачен! ' + img.naturalWidth + '×' + img.naturalHeight, 'success');
 			};
