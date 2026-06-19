@@ -82,6 +82,7 @@ function openHelp() {
 }
 
 document.getElementById('btn-help').addEventListener('click', openHelp);
+document.getElementById('btn-open-help').addEventListener('click', openHelp);
 document.getElementById('btn-help-templates').addEventListener('click', (e) => {
 	e.stopPropagation();
 	openHelp();
