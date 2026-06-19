@@ -3,1236 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Reels Preview — Генератор превью из видео</title>
-  <style>
-    :root {
-      --bg-page: #ffffff;
-      --bg-secondary: #f9fafb;
-      --bg-hover: #f3f4f6;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --text-muted: #9ca3af;
-      --border: #e5e7eb;
-      --border-focus: #2563eb;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --accent-light: #eff6ff;
-      --success: #059669;
-      --warning-bg: #fffbeb;
-      --warning-border: #fcd34d;
-      --warning-text: #92400e;
-      --radius: 10px;
-      --radius-lg: 14px;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-      --font-ui: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      font-family: var(--font-ui);
-      background: var(--bg-page);
-      color: var(--text-primary);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .container { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
-
-    header {
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-page);
-    }
-    .logo {
-      font-size: 1.15rem; font-weight: 700; color: var(--text-primary);
-      display: flex; align-items: center; gap: 6px; text-decoration: none;
-      letter-spacing: -0.02em;
-    }
-    .logo span { color: var(--accent); }
-
-    .hero { text-align: center; padding: 28px 0 12px; }
-    .hero h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; }
-    .hero p { font-size: 1rem; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
-
-    .tool-card {
-      background: var(--bg-page);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-md);
-      margin-bottom: 24px;
-    }
-
-    .tabs { display: flex; gap: 8px; margin-bottom: 14px; justify-content: center; flex-wrap: wrap; }
-    .tab {
-      padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg-page); color: var(--text-secondary); cursor: pointer;
-      font-size: 0.875rem; font-weight: 500; transition: all 0.15s ease;
-    }
-    .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
-    .tab.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
-
-    .input-group { display: none; margin-bottom: 14px; }
-    .input-group.active { display: block; }
-    .input-row { display: flex; gap: 10px; }
-    .input-field {
-      flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
-      font-size: 0.9rem; color: var(--text-primary); background: var(--bg-page);
-      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-      font-family: var(--font-mono);
-    }
-    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    .input-field::placeholder { color: var(--text-muted); }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 16px; border: none; border-radius: var(--radius);
-      font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--bg-hover); }
-    .btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-    .btn-danger:hover { background: #fecaca; }
-    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
-
-    .drop-zone {
-      border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px;
-      text-align: center; cursor: pointer; transition: all 0.15s; background: var(--bg-secondary);
-      position: relative;
-    }
-    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-light); }
-    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .drop-zone p { color: var(--text-secondary); font-size: 0.9rem; }
-    .drop-zone .hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
-    .file-info { margin-top: 8px; font-size: 0.8rem; color: var(--success); font-family: var(--font-mono); }
-    .cors-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; text-align: center; }
-
-    .preview-area { display: none; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 12px; }
-    .preview-area.visible { display: block; }
-    .video-wrapper {
-      position: relative; background: #000; border-radius: var(--radius);
-      overflow: hidden; aspect-ratio: 16/9; margin-bottom: 16px;
-    }
-    .video-wrapper video, .video-wrapper iframe { width: 100%; height: 100%; display: block; }
-    
-    .warning-box {
-      background: var(--warning-bg); border: 1px solid var(--warning-border);
-      color: var(--warning-text); padding: 10px 14px; border-radius: 8px;
-      font-size: 0.825rem; margin-bottom: 16px; display: none; align-items: center; gap: 6px;
-    }
-    .warning-box.visible { display: flex; }
-
-    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 0; }
-    .video-wrapper {
-      position: relative; background: #000; border-radius: var(--radius);
-      overflow: hidden; aspect-ratio: 16/9; margin-bottom: 10px;
-    }
-    .time-control input[type="range"] { width: 110px; accent-color: var(--accent); cursor: pointer; }
-    .time-label { font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-mono); min-width: 90px; }
-    .format-select {
-      padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg-page); color: var(--text-primary); font-size: 0.825rem;
-      outline: none; cursor: pointer;
-    }
-
-    .result-area { display: none; margin-top: 8px; }
-    .result-area.visible { display: block; }
-    
-    .result-container { max-width: 100%; margin: 0 auto; }
-    .result-wrapper { 
-      position: relative; width: 100%; background: var(--bg-secondary); 
-      border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); 
-    }
-    .result-img { width: 100%; height: auto; display: block; }
-    .zoom-container {
-      transform-origin: center center;
-      transition: transform 0.1s ease-out;
-    }
-    /* в сплит-режиме картинка ограничена высотой экрана */
-    .result-split.split-active .result-wrapper {
-      max-height: calc(100vh - 220px);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .result-split.split-active .result-wrapper.zoomed {
-      overflow: auto;
-      cursor: grab;
-    }
-    .result-split.split-active .result-wrapper.zoomed.grabbing {
-      cursor: grabbing;
-    }
-    .result-split.split-active .result-img {
-      width: auto; height: auto;
-      max-width: 100%; max-height: calc(100vh - 220px);
-      object-fit: contain;
-    }
-    .zoom-badge {
-      position: absolute; bottom: 8px; right: 8px;
-      background: rgba(0,0,0,0.65); color: #fff; font-size: 0.75rem;
-      padding: 3px 8px; border-radius: 6px; font-family: var(--font-mono);
-      pointer-events: none; opacity: 0; transition: opacity 0.2s;
-      z-index: 10;
-    }
-    .zoom-badge.visible { opacity: 1; }
-    
-    .text-overlay { position: absolute; inset: 0; cursor: crosshair; }
-    .text-overlay.disabled { pointer-events: none; cursor: default; }
-    
-    .text-box {
-      position: absolute; padding: 6px 10px;
-      border-radius: 6px; color: #fff; font-family: var(--font-ui);
-      cursor: move; user-select: none; -webkit-user-select: none;
-      border: 2px solid transparent; transition: border-color 0.15s, box-shadow 0.15s;
-      line-height: 1.25;
-    }
-    .text-box.has-bg { backdrop-filter: blur(2px); }
-    .text-box:hover { border-color: rgba(255,255,255,0.6); }
-    .text-box.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }
-    .text-box.editing { cursor: text !important; user-select: text !important; -webkit-user-select: text !important; }
-    .text-box.editing .resize-handle { display: none; }
-    
-    .tb-text {
-      display: block; min-width: 1em; min-height: 1.2em; outline: none;
-      white-space: pre-wrap; word-break: break-word; vertical-align: top;
-    }
-    
-    .resize-handle {
-      position: absolute; bottom: -6px; right: -6px; width: 14px; height: 14px;
-      background: var(--accent); border: 2px solid #fff; border-radius: 50%;
-      cursor: nwse-resize; display: none;
-    }
-    .text-box.selected .resize-handle { display: block; }
-    .text-box:hover .resize-handle { display: block; }
-
-    .del-btn {
-      position: absolute; top: -10px; right: -10px; width: 22px; height: 22px;
-      background: #ef4444; color: #fff; border: 2px solid #fff; border-radius: 50%;
-      font-size: 12px; line-height: 1; cursor: pointer; display: none;
-      align-items: center; justify-content: center; z-index: 5;
-    }
-    .text-box:hover .del-btn, .text-box.selected .del-btn { display: flex; }
-    .text-box.editing .del-btn { display: none; }
-
-    .text-toolbar {
-      display: none; flex-wrap: wrap; gap: 10px; align-items: center;
-      background: var(--bg-secondary); border: 1px solid var(--border);
-      padding: 10px 14px; border-radius: var(--radius); margin-top: 12px;
-    }
-    .text-toolbar.visible { display: flex; }
-    .text-toolbar label { display: flex; align-items: center; gap: 6px; font-size: 0.825rem; color: var(--text-secondary); }
-    .text-toolbar input[type="color"] { width: 28px; height: 28px; padding: 0; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: none; }
-    .text-toolbar select, .text-toolbar input[type="range"] { accent-color: var(--accent); cursor: pointer; }
-    .edit-hint { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
-
-    .result-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
-    .meta { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; font-family: var(--font-mono); }
-
-    footer { text-align: center; padding: 16px 0; color: var(--text-muted); font-size: 0.75rem; border-top: 1px solid var(--border); }
-
-    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
-    .toast {
-      background: var(--bg-page); border: 1px solid var(--border); padding: 10px 14px;
-      border-radius: 10px; box-shadow: var(--shadow-md); font-size: 0.85rem;
-      display: flex; align-items: center; gap: 8px; animation: slideIn 0.25s ease;
-    }
-    .toast.success { border-left: 3px solid var(--success); }
-    .toast.error { border-left: 3px solid #dc2626; }
-    .toast.info { border-left: 3px solid var(--accent); }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    /* сплит-лейаут: настройки слева, превью справа (только когда есть результат) */
-    .result-split { display: contents; }
-    .result-split.split-active {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 24px;
-      align-items: start;
-    }
-    .result-split.split-active .split-image { order: 2; }
-    .result-split.split-active .split-settings { order: 1; }
-    .result-split.split-active .split-settings {
-      position: sticky; top: 12px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-    }
-    .result-split.split-active .split-settings .text-toolbar {
-      display: none; margin-top: 0; background: transparent; border: none;
-      padding: 0; flex-direction: column; gap: 8px;
-    }
-    .result-split.split-active .split-settings .text-toolbar.visible {
-      display: flex;
-    }
-    .result-split.split-active .split-settings .text-toolbar label { font-size: 0.825rem; }
-    .result-split.split-active .split-settings .result-actions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .split-image .result-wrapper { border: 1px solid var(--border); }
-    .help-hints {
-      display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 8px;
-      font-size: 0.72rem; color: var(--text-muted); line-height: 1.3;
-    }
-    .help-hints span { white-space: nowrap; }
-
-    /* превью-модал */
-    .preview-overlay {
-      display: none; position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.92); align-items: center; justify-content: center;
-      flex-direction: column; gap: 16px;
-    }
-    .preview-overlay.visible { display: flex; }
-    .preview-overlay img {
-      max-width: 92vw; max-height: 85vh; border-radius: 8px;
-      box-shadow: 0 0 40px rgba(0,0,0,0.5); object-fit: contain;
-    }
-    .preview-close {
-      position: fixed; top: 16px; right: 24px;
-      background: rgba(255,255,255,0.15); color: #fff; border: none;
-      width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    .preview-close:hover { background: rgba(255,255,255,0.3); }
-    .preview-info {
-      color: rgba(255,255,255,0.6); font-size: 0.8rem; font-family: var(--font-mono);
-    }
-
-    /* этапы-спойлеры */
-    .stage {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 12px;
-      overflow: hidden;
-      transition: box-shadow 0.2s;
-      scroll-margin-top: 12px;
-    }
-    .stage.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
-    .stage-header {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 14px; cursor: pointer; user-select: none;
-      background: var(--bg-secondary); font-weight: 600; font-size: 0.85rem; color: var(--text-primary);
-      transition: background 0.15s;
-    }
-    .stage-header:hover { background: var(--bg-hover); }
-    .stage-num {
-      display: flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: var(--text-muted); color: #fff; font-size: 0.75rem; font-weight: 700;
-      flex-shrink: 0; transition: background 0.2s;
-    }
-    .stage.active .stage-num { background: var(--accent); }
-    .stage.done .stage-num { background: var(--success); }
-    .stage-summary { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .stage-arrow { margin-left: auto; transition: transform 0.25s; color: var(--text-muted); font-size: 0.7rem; }
-    .stage.collapsed .stage-arrow { transform: rotate(-90deg); }
-    .stage-body { padding: 12px 14px; display: block; }
-    .stage.collapsed .stage-body { display: none; }
-
-    @media (max-width: 800px) {
-      .result-split.split-active { grid-template-columns: 1fr; }
-      .split-settings { position: static; }
-    }
-    @media (max-width: 640px) {
-      .hero h1 { font-size: 1.6rem; }
-      .input-row { flex-direction: column; }
-      .controls { flex-direction: column; align-items: stretch; }
-      .time-control input[type="range"] { width: 100%; }
-      .result-actions, .text-toolbar { flex-direction: column; align-items: stretch; }
-      .meta, .edit-hint { margin-left: 0; text-align: center; }
-    }
-  </style>
+  <title>Video Reels Preview</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <div class="container">
-      <a href="#" class="logo">Video <span>Reels Preview</span></a>
+
+  <header class="topbar">
+    <div class="topbar-logo">Video <span>Reels Preview</span></div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary btn-sm" id="btn-undo" disabled>Undo</button>
+      <button class="btn btn-secondary btn-sm" id="btn-redo" disabled>Redo</button>
+      <button class="btn btn-primary btn-sm" id="btn-export">Export</button>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <h1>Генератор превью из видео</h1>
-      <p>Вставьте ссылку на видео или загрузите файл — и получите превью-изображение в один клик.</p>
-    </section>
+  <main class="app">
 
-    <div class="tool-card">
+    <!-- LEFT PANEL -->
+    <aside class="panel-left">
 
-      <div class="stage active" id="stage-source">
-        <div class="stage-header" onclick="toggleStage('stage-source')">
-          <span class="stage-num">1</span> Источник видео
-          <span class="stage-summary" id="stage-source-summary"></span>
-          <span class="stage-arrow">▾</span>
+      <div class="panel-section">
+        <div class="panel-title">Source</div>
+
+        <div class="source-tabs">
+          <button class="tab-btn active" data-src="auto">Auto</button>
+          <button class="tab-btn" data-src="youtube">YouTube</button>
+          <button class="tab-btn" data-src="rutube">Rutube</button>
+          <button class="tab-btn" data-src="file">File</button>
         </div>
-        <div class="stage-body">
 
-      <div class="tabs">
-        <button class="tab active" data-src="auto" onclick="switchTab('auto')">🔍 Авто</button>
-        <button class="tab" data-src="youtube" onclick="switchTab('youtube')">▶ YouTube</button>
-        <button class="tab" data-src="rutube" onclick="switchTab('rutube')">▶ Rutube</button>
-        <button class="tab" data-src="file" onclick="switchTab('file')">▶ MP4 / WebM</button>
-      </div>
-
-      <div class="input-group active" id="grp-auto">
-        <div class="input-row">
-          <input type="text" class="input-field" id="auto-url" placeholder="Вставьте ссылку (YouTube, Rutube, прямой файл)..." oninput="validateAuto()">
-          <button class="btn btn-primary" id="btn-auto" onclick="loadAuto()" disabled>ЗАГРУЗИТЬ</button>
-        </div>
-        <div class="cors-hint">Система автоматически определит тип источника.</div>
-      </div>
-
-      <div class="input-group" id="grp-youtube">
-        <div class="input-row">
-          <input type="text" class="input-field" id="yt-url" placeholder="https://www.youtube.com/watch?v=... или https://youtu.be/..." oninput="validateYt()">
-          <button class="btn btn-primary" id="btn-yt" onclick="loadYt()" disabled>ЗАГРУЗИТЬ</button>
-        </div>
-      </div>
-
-      <div class="input-group" id="grp-rutube">
-        <div class="input-row">
-          <input type="text" class="input-field" id="rt-url" placeholder="https://rutube.ru/video/..." oninput="validateRt()">
-          <button class="btn btn-primary" id="btn-rt" onclick="loadRt()" disabled>ЗАГРУЗИТЬ</button>
-        </div>
-      </div>
-
-      <div class="input-group" id="grp-file">
-        <div class="input-row" style="margin-bottom: 12px;">
-          <input type="text" class="input-field" id="mp4-url" placeholder="https://example.com/video.mp4 (прямая ссылка)" oninput="validateMp4Url()">
-          <button class="btn btn-primary" id="btn-mp4-url" onclick="loadMp4Url()" disabled>ЗАГРУЗИТЬ</button>
-        </div>
-        <div class="cors-hint">⚠ Сервер с видео должен поддерживать CORS для захвата кадра</div>
-        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 8px 0;">или загрузите файл</div>
-        <div class="drop-zone" id="dropzone">
-          <p>🎬 Перетащите файл сюда или нажмите для выбора</p>
-          <p class="hint">MP4, WebM, MOV, AVI...</p>
-          <input type="file" id="file-input" accept="video/*" onchange="handleFile(this.files[0])">
-        </div>
-        <div class="file-info" id="file-info"></div>
-      </div>
-
-        </div>
-      </div>
-
-      <div class="stage collapsed" id="stage-video">
-        <div class="stage-header" onclick="toggleStage('stage-video')">
-          <span class="stage-num">2</span> Предпросмотр видео
-          <span class="stage-summary" id="stage-video-summary"></span>
-          <span class="stage-arrow">▾</span>
-        </div>
-        <div class="stage-body">
-
-      <div class="preview-area" id="preview-area">
-        <div class="warning-box" id="rt-warning">⚠ Захват кадра из встроенного плеера Rutube недоступен в браузере. Доступна загрузка превью-изображения.</div>
-        <div class="video-wrapper" id="video-wrapper">
-          <video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>
-        </div>
-        <div class="controls" id="video-controls">
-          <div class="time-control">
-            <span class="time-label" id="time-display">0:00 / 0:00</span>
-            <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1" oninput="seek(this.value)">
+        <div class="input-group active" id="src-auto">
+          <div class="source-input-row">
+            <input type="text" id="source-url" placeholder="Paste URL...">
+            <button class="btn btn-primary btn-sm" id="btn-load">Load</button>
           </div>
-          <select class="format-select" id="fmt">
+        </div>
+
+        <div class="input-group" id="src-file">
+          <div class="drop-zone" id="dropzone">
+            <p>Drop video or click to select</p>
+            <p class="hint">MP4, WebM, MOV...</p>
+            <input type="file" id="file-input" accept="video/*">
+          </div>
+        </div>
+
+        <div id="video-controls">
+          <span class="time-display" id="time-display">0:00 / 0:00</span>
+          <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1">
+          <select id="fmt">
             <option value="png">PNG</option>
             <option value="jpeg">JPEG 90%</option>
             <option value="webp">WebP</option>
           </select>
-          <button class="btn btn-primary" id="btn-capture" onclick="capture()">📸 Снять кадр</button>
+          <button class="btn btn-primary btn-sm" id="btn-capture">Capture</button>
         </div>
       </div>
 
+      <div class="panel-section">
+        <div class="panel-title">Tools</div>
+        <div class="tool-grid">
+          <button class="tool-btn active" data-tool="select">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+            Select
+          </button>
+          <button class="tool-btn" data-tool="text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+            Text
+          </button>
+          <button class="tool-btn" data-tool="rect">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            Rect
+          </button>
+          <button class="tool-btn" data-tool="circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+            Circle
+          </button>
+          <button class="tool-btn" data-tool="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19L19 5M19 5v10M19 5H9"/></svg>
+            Arrow
+          </button>
+          <button class="tool-btn" data-tool="line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            Line
+          </button>
         </div>
       </div>
 
-      <div class="stage collapsed" id="stage-result">
-        <div class="stage-header" onclick="toggleStage('stage-result')">
-          <span class="stage-num">3</span> Результат
-          <span class="stage-summary" id="stage-result-summary"></span>
-          <span class="stage-arrow">▾</span>
-        </div>
-        <div class="stage-body">
+      <div class="panel-section" id="props-panel">
+        <div class="panel-title">Properties</div>
+        <div id="props-content"></div>
+      </div>
 
-      <div class="result-area" id="result-area">
-        <div class="result-container" id="result-container">
-          <div class="result-split" id="result-split">
-            <div class="split-image">
-              <div class="result-wrapper" id="result-wrapper">
-                <div class="zoom-container" id="zoom-container">
-                  <img id="result-img" class="result-img" alt="Превью">
-                  <div id="text-overlay" class="text-overlay disabled"></div>
-                </div>
-                <div class="zoom-badge" id="zoom-badge">100%</div>
-              </div>
-              <div class="help-hints" id="help-hints">
-                <span>🖱 Ctrl+колесо — зум</span>
-                <span>🖱 Зажать + тащить — двигать при зуме</span>
-                <span>✏️ «Текст» → клик по картинке → перетащи → клик для ввода</span>
-                <span>⌨ Enter — сохранить, Esc — выйти</span>
-              </div>
-            </div>
-            <div class="split-settings" id="split-settings">
-              <div class="text-toolbar" id="text-toolbar">
-                <label>Цвет: <input type="color" id="txt-color" value="#ffffff" onchange="applyTextStyle()"></label>
-                <label>Жирность:
-                  <select id="txt-weight" onchange="applyTextStyle()">
-                    <option value="400">Обычный</option>
-                    <option value="600">Полужирный</option>
-                    <option value="700">Жирный</option>
-                    <option value="900">Сверхжирный</option>
-                  </select>
-                </label>
-                <label>Размер: <input type="range" id="txt-size" min="12" max="150" value="22" oninput="applyTextStyle()"></label>
-                <label class="bg-toggle">☑ Фон <input type="checkbox" id="txt-bg" checked onchange="applyTextStyle()"></label>
-                <label>Прозр.: <input type="range" id="txt-bg-opacity" min="5" max="100" value="40" oninput="applyTextStyle()"></label>
-                <button class="btn btn-danger btn-sm" onclick="deleteSelectedText()">🗑 Удалить</button>
-                <button class="btn btn-secondary btn-sm" onclick="clearAllText()">🧹 Очистить всё</button>
-                <span class="edit-hint">💡 Enter — сохранить, Esc — выйти</span>
-              </div>
-              <div class="result-actions">
-                <button class="btn btn-secondary" id="btn-text-mode" onclick="toggleTextMode()">✏️ Текст</button>
-                <button class="btn btn-secondary" onclick="openPreview()">👁 Предпросмотр</button>
-                <button class="btn btn-primary" onclick="download()">⬇ Скачать</button>
-                <button class="btn btn-secondary" onclick="copyToClipboard()">📋 Копировать</button>
-                <span class="meta" id="res-meta"></span>
-              </div>
-            </div>
-          </div>
+      <div class="panel-section" id="filters-panel">
+        <div class="panel-title">Filters</div>
+        <div id="filters-content"></div>
+        <button class="btn btn-secondary btn-sm" id="btn-reset-filters" style="margin-top:8px;width:100%">Reset Filters</button>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Presets</div>
+        <select id="preset-select" style="width:100%">
+          <option value="shorts">YouTube Shorts 9:16</option>
+          <option value="square">Instagram 1:1</option>
+          <option value="youtube">YouTube 16:9</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div class="custom-size-inputs" id="custom-size" style="display:none">
+          <input type="number" id="custom-w" placeholder="W" min="1">
+          <span>×</span>
+          <input type="number" id="custom-h" placeholder="H" min="1">
+          <button class="btn btn-secondary btn-sm" id="btn-apply-size">Apply</button>
         </div>
       </div>
 
+    </aside>
+
+    <!-- CENTER -->
+    <section class="canvas-area">
+      <div id="video-wrapper">
+        <video id="player" controls crossorigin="anonymous"></video>
+      </div>
+      <div id="canvas-container">
+        <canvas id="editor-canvas"></canvas>
+        <div class="zoom-badge" id="zoom-badge">100%</div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <aside class="panel-right">
+
+      <div class="panel-section">
+        <div class="panel-title">Layers</div>
+        <div class="layer-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-add-layer">+ Add</button>
+          <button class="btn btn-secondary btn-sm" id="btn-dup-layer">Dup</button>
+          <button class="btn btn-danger btn-sm" id="btn-del-layer">Del</button>
+        </div>
+        <div id="layer-list"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Templates</div>
+        <div class="template-row">
+          <select id="template-select">
+            <option value="">— none —</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" id="btn-save-template">Save</button>
+          <button class="btn btn-danger btn-sm" id="btn-del-template">Del</button>
         </div>
       </div>
 
-    </div>
+    </aside>
+
   </main>
 
-  <footer>
-    <div class="container">
-      <p>Video Reels Preview — Всё обрабатывается локально в браузере. Файлы не отправляются на сервер.</p>
-      <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">
-        ⚠ Примечание: Прямой захват кадров из сторонних iframe (Kinescope, Vimeo и др.) невозможен из-за ограничений безопасности браузера (CORS). Используйте прямые ссылки на файлы или локальные видео.
-      </p>
-    </div>
-  </footer>
+  <!-- OVERLAYS -->
+  <div id="toasts"></div>
 
-  <canvas id="cvs" style="display:none"></canvas>
-  <div class="toast-container" id="toasts"></div>
-
-  <div class="preview-overlay" id="preview-overlay" onclick="closePreview()">
-    <button class="preview-close" onclick="closePreview()" title="Закрыть (Esc)">✕</button>
-    <img id="preview-img" alt="Предпросмотр" onclick="event.stopPropagation()">
-    <span class="preview-info" id="preview-info"></span>
+  <div id="preview-overlay">
+    <button class="preview-close" id="preview-close">✕</button>
+    <img id="preview-img" alt="Preview">
+    <span id="preview-info"></span>
   </div>
 
-  <script>
-    let srcType = 'auto';
-    let ytId = null, rtId = null;
-    let duration = 0;
-    let baseImage = new Image();
-    
-    const wrapper = document.getElementById('video-wrapper');
-    const previewArea = document.getElementById('preview-area');
-    const resultArea = document.getElementById('result-area');
-    const resultImg = document.getElementById('result-img');
-    const resMeta = document.getElementById('res-meta');
-    const rtWarning = document.getElementById('rt-warning');
-    const canvas = document.getElementById('cvs');
-    const slider = document.getElementById('time-slider');
-    const timeDisp = document.getElementById('time-display');
-    const overlay = document.getElementById('text-overlay');
-    const toolbar = document.getElementById('text-toolbar');
-    const btnTextMode = document.getElementById('btn-text-mode');
-    const videoControls = document.getElementById('video-controls');
-    const btnCapture = document.getElementById('btn-capture');
-    const resultSplit = document.getElementById('result-split');
-    const resultWrapper = document.getElementById('result-wrapper');
-    const previewOverlay = document.getElementById('preview-overlay');
-    const previewImg = document.getElementById('preview-img');
-    const previewInfo = document.getElementById('preview-info');
-    const zoomContainer = document.getElementById('zoom-container');
-    const zoomBadge = document.getElementById('zoom-badge');
-
-    let textElements = [];
-    let selectedId = null;
-    let isTextMode = false;
-    let nextId = 1;
-    let zoomLevel = 1;
-    let zoomTimer = null;
-
-    /* ===== STAGE MANAGEMENT ===== */
-    function toggleStage(stageId) {
-      const el = document.getElementById(stageId);
-      if (!el) return;
-      el.classList.toggle('collapsed');
-    }
-
-    function goToStage(stageId) {
-      document.querySelectorAll('.stage').forEach(s => { s.classList.add('collapsed'); s.classList.remove('active'); });
-      const el = document.getElementById(stageId);
-      if (!el) return;
-      el.classList.remove('collapsed');
-      el.classList.add('active');
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.scrollIntoView({behavior: 'smooth', block: 'start'});
-        });
-      });
-    }
-
-    function markDone(stageId, summary) {
-      const el = document.getElementById(stageId);
-      if (!el) return;
-      el.classList.add('done');
-      el.classList.remove('active');
-      const summaryEl = el.querySelector('.stage-summary');
-      if (summaryEl && summary) summaryEl.textContent = '— ' + summary;
-    }
-
-    /* ===== ZOOM ===== */
-    function updateZoom() {
-      zoomContainer.style.transform = `scale(${zoomLevel})`;
-      zoomBadge.textContent = Math.round(zoomLevel * 100) + '%';
-      zoomBadge.classList.add('visible');
-      if (zoomLevel === 1) {
-        resultWrapper.classList.remove('zoomed');
-      } else {
-        resultWrapper.classList.add('zoomed');
-      }
-      clearTimeout(zoomTimer);
-      zoomTimer = setTimeout(() => zoomBadge.classList.remove('visible'), 1500);
-    }
-
-    resultWrapper.addEventListener('wheel', (e) => {
-      if (!e.ctrlKey && !e.metaKey) return;
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      zoomLevel = Math.max(0.25, Math.min(3, zoomLevel + delta));
-      updateZoom();
-    }, { passive: false });
-
-    resultWrapper.addEventListener('dblclick', (e) => {
-      if (e.target === resultWrapper || e.target === zoomContainer) {
-        zoomLevel = 1;
-        updateZoom();
-      }
-    });
-
-    /* pan при зуме: зажать мышку и перетащить */
-    let panState = null;
-    resultWrapper.addEventListener('mousedown', (e) => {
-      if (zoomLevel <= 1) return;
-      if (e.target.closest('.text-box')) return;
-      if (e.target.closest('.btn') || e.target.closest('button')) return;
-      if (isTextMode && e.target === overlay) return;
-      panState = { x: e.clientX, y: e.clientY, scrollLeft: resultWrapper.scrollLeft, scrollTop: resultWrapper.scrollTop };
-      resultWrapper.classList.add('grabbing');
-      e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!panState) return;
-      const dx = panState.x - e.clientX;
-      const dy = panState.y - e.clientY;
-      resultWrapper.scrollLeft = panState.scrollLeft + dx;
-      resultWrapper.scrollTop = panState.scrollTop + dy;
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (panState) {
-        resultWrapper.classList.remove('grabbing');
-        panState = null;
-      }
-    });
-
-    function getPlayer() { return document.getElementById('player'); }
-
-    function switchTab(type) {
-      srcType = type;
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.src === type));
-      document.querySelectorAll('.input-group').forEach(g => g.classList.remove('active'));
-      document.getElementById(`grp-${type}`).classList.add('active');
-      previewArea.classList.remove('visible');
-      resultArea.classList.remove('visible');
-      rtWarning.classList.remove('visible');
-      resultSplit.classList.remove('split-active');
-      clearTextOverlay();
-      goToStage('stage-source');
-      zoomLevel = 1; updateZoom();
-      
-      document.getElementById('mp4-url').value = '';
-      document.getElementById('btn-mp4-url').disabled = true;
-      document.getElementById('file-info').textContent = '';
-      document.getElementById('auto-url').value = '';
-      document.getElementById('btn-auto').disabled = true;
-      
-      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
-      const tc = document.querySelector('.time-control');
-      if (tc) tc.style.display = '';
-      videoControls.style.display = 'flex';
-      btnCapture.style.display = 'inline-flex';
-    }
-
-    function toast(msg, type='info') {
-      const c = document.getElementById('toasts');
-      const t = document.createElement('div');
-      t.className = `toast ${type}`;
-      const icons = {success:'✅', error:'❌', info:'ℹ️'};
-      t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
-      c.appendChild(t);
-      setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all .25s';setTimeout(()=>t.remove(),250)},3000);
-    }
-
-    function fmtTime(s) { const m=Math.floor(s/60); return `${m}:${Math.floor(s%60).toString().padStart(2,'0')}`; }
-
-    /* ===== AUTO DETECTION ===== */
-    function validateAuto() { document.getElementById('btn-auto').disabled = !document.getElementById('auto-url').value.trim(); }
-    function detectSourceType(input) {
-      const clean = input.trim();
-      if (clean.match(/\.(mp4|webm|mov|ogg|m3u8)(\?.*)?$/i)) return 'direct';
-      if (clean.match(/youtube\.com|youtu\.be/)) return 'youtube';
-      if (clean.match(/rutube\.ru/)) return 'rutube';
-      return 'unknown';
-    }
-    function loadAuto() {
-      const input = document.getElementById('auto-url').value.trim();
-      const type = detectSourceType(input);
-      if (type === 'youtube') { switchTab('youtube'); document.getElementById('yt-url').value = input; loadYt(); }
-      else if (type === 'rutube') { switchTab('rutube'); document.getElementById('rt-url').value = input; loadRt(); }
-      else if (type === 'direct') { switchTab('file'); document.getElementById('mp4-url').value = input; loadMp4Url(); }
-      else { toast('Не удалось определить тип ссылки. Выберите вкладку вручную.', 'error'); }
-    }
-
-    /* ===== YOUTUBE ===== */
-    function extractYtId(u) { const m = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
-    function validateYt() { document.getElementById('btn-yt').disabled = !extractYtId(document.getElementById('yt-url').value); }
-    function loadYt() {
-      ytId = extractYtId(document.getElementById('yt-url').value);
-      if(!ytId) return toast('Неверная ссылка YouTube','error');
-      wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
-      previewArea.classList.add('visible');
-      rtWarning.classList.remove('visible');
-      const tc = document.querySelector('.time-control');
-      if (tc) tc.style.display = 'none';
-      videoControls.style.display = 'flex';
-      btnCapture.style.display = 'inline-flex';
-      clearTextOverlay();
-      markDone('stage-source', 'YouTube');
-      goToStage('stage-video');
-      toast('YouTube видео загружено. Нажмите «Снять кадр» для превью.','success');
-    }
-
-    /* ===== RUTUBE ===== */
-    function extractRtId(u) { const m = u.match(/rutube\.ru\/video\/([a-zA-Z0-9]+)/); return m ? m[1] : null; }
-    function validateRt() { document.getElementById('btn-rt').disabled = !extractRtId(document.getElementById('rt-url').value); }
-    function loadRt() {
-      rtId = extractRtId(document.getElementById('rt-url').value);
-      if(!rtId) return toast('Неверная ссылка Rutube','error');
-      wrapper.innerHTML = `<iframe src="https://rutube.ru/play/embed/${rtId}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
-      previewArea.classList.add('visible');
-      rtWarning.classList.add('visible');
-      const tc = document.querySelector('.time-control');
-      if (tc) tc.style.display = 'none';
-      videoControls.style.display = 'flex';
-      btnCapture.style.display = 'inline-flex';
-      clearTextOverlay();
-      markDone('stage-source', 'Rutube');
-      goToStage('stage-video');
-      toast('Rutube видео загружено','success');
-    }
-
-    /* ===== DIRECT FILE / MP4 ===== */
-    function validateMp4Url() { document.getElementById('btn-mp4-url').disabled = !document.getElementById('mp4-url').value.trim(); }
-    function loadMp4Url() {
-      const url = document.getElementById('mp4-url').value.trim();
-      if (!url) return toast('Введите ссылку на видео', 'error');
-      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
-      getPlayer().src = url;
-      previewArea.classList.add('visible');
-      rtWarning.classList.remove('visible');
-      videoControls.style.display = 'flex';
-      btnCapture.style.display = 'inline-flex';
-      clearTextOverlay();
-      markDone('stage-source', 'MP4 ссылка');
-      goToStage('stage-video');
-      toast('Загрузка видео по ссылке...', 'info');
-    }
-    function onVideoError() { toast('Ошибка загрузки видео. Проверьте ссылку или CORS.', 'error'); }
-
-    const dropzone = document.getElementById('dropzone');
-    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-    dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
-
-    function handleFile(f) {
-      if(!f || !f.type.startsWith('video/')) return toast('Выберите видеофайл','error');
-      document.getElementById('file-info').textContent = `📎 ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`;
-      wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
-      getPlayer().src = URL.createObjectURL(f);
-      previewArea.classList.add('visible');
-      rtWarning.classList.remove('visible');
-      videoControls.style.display = 'flex';
-      btnCapture.style.display = 'inline-flex';
-      clearTextOverlay();
-      markDone('stage-source', f.name);
-      goToStage('stage-video');
-      toast('Файл загружен','success');
-    }
-
-    function onMeta() { duration = getPlayer().duration; slider.max = duration; slider.value = 0; timeDisp.textContent = `0:00 / ${fmtTime(duration)}`; }
-    function onTime() { if(duration>0) { slider.value = getPlayer().currentTime; timeDisp.textContent = `${fmtTime(getPlayer().currentTime)} / ${fmtTime(duration)}`; } }
-    function seek(v) { getPlayer().currentTime = parseFloat(v); timeDisp.textContent = `${fmtTime(v)} / ${fmtTime(duration)}`; }
-
-    /* ===== CAPTURE ===== */
-    function capture() {
-      const p = getPlayer();
-      if(srcType === 'file' && p.src && p.videoWidth) {
-        canvas.width = p.videoWidth; canvas.height = p.videoHeight;
-        canvas.getContext('2d').drawImage(p, 0, 0);
-        finalizeCapture();
-      } else if(srcType === 'youtube' && ytId) {
-        const variants = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
-        let loaded = false;
-        variants.forEach((v, i) => {
-          if (loaded) return;
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            if (loaded || img.naturalWidth < 100) return;
-            loaded = true;
-            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            finalizeCapture();
-          };
-          img.onerror = () => {};
-          img.src = `https://img.youtube.com/vi/${ytId}/${v}.jpg`;
-        });
-        setTimeout(() => { if (!loaded) toast('Не удалось загрузить превью YouTube','error'); }, 5000);
-      } else {
-        toast('Загрузите MP4 файл/ссылку или используйте YouTube','info');
-      }
-    }
-
-    function finalizeCapture() {
-      const fmt = document.getElementById('fmt').value;
-      const mime = fmt==='jpeg' ? 'image/jpeg' : fmt==='webp' ? 'image/webp' : 'image/png';
-      const quality = fmt==='jpeg' ? 0.9 : 0.92;
-      canvas.toBlob(blob => {
-        baseImage.src = URL.createObjectURL(blob);
-        resultImg.src = baseImage.src;
-        resMeta.textContent = `${canvas.width}×${canvas.height} • ${fmt.toUpperCase()}`;
-        resultArea.classList.add('visible');
-        resultSplit.classList.add('split-active');
-        clearTextOverlay();
-        markDone('stage-video', 'Кадр захвачен');
-        goToStage('stage-result');
-        zoomLevel = 1; updateZoom();
-        toast('Кадр захвачен. Добавьте текст или скачайте.','success');
-      }, mime, quality);
-    }
-
-    /* ===== TEXT OVERLAY ===== */
-    function toggleTextMode() {
-      isTextMode = !isTextMode;
-      overlay.classList.toggle('disabled', !isTextMode);
-      btnTextMode.classList.toggle('btn-primary', isTextMode);
-      btnTextMode.classList.toggle('btn-secondary', !isTextMode);
-      btnTextMode.textContent = isTextMode ? '✏️ Режим текста (вкл)' : '✏️ Текст';
-      if(!isTextMode) deselectText();
-      toast(isTextMode ? 'Кликните по изображению, чтобы добавить текст' : 'Режим текста выключен', 'info');
-    }
-
-    overlay.addEventListener('click', (e) => {
-      if(!isTextMode || e.target !== overlay) return;
-      deselectText();
-      const rect = overlay.getBoundingClientRect();
-      createTextBox((e.clientX - rect.left) / zoomLevel, (e.clientY - rect.top) / zoomLevel);
-    });
-
-    function createTextBox(x, y) {
-      const id = nextId++;
-      const el = document.createElement('div');
-      el.className = 'text-box';
-      el.id = `tb-${id}`;
-      el.style.left = `${x}px`;
-      el.style.top = `${y}px`;
-      el.style.fontSize = '22px';
-      el.style.fontWeight = '700';
-      el.style.color = '#ffffff';
-      
-      const span = document.createElement('div');
-      span.className = 'tb-text';
-      span.textContent = 'Текст';
-      el.appendChild(span);
-
-      const handle = document.createElement('div');
-      handle.className = 'resize-handle';
-      el.appendChild(handle);
-
-      const delBtn = document.createElement('div');
-      delBtn.className = 'del-btn';
-      delBtn.textContent = '×';
-      delBtn.title = 'Удалить';
-      delBtn.addEventListener('mousedown', (e) => {
-        e.stopPropagation(); e.preventDefault();
-        deleteTextById(id);
-      });
-      el.appendChild(delBtn);
-
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (el.classList.contains('editing')) return;
-        if (selectedId === id) {
-          startEditing(id, el, span);
-        } else {
-          selectText(id);
-        }
-      });
-
-      el.addEventListener('dblclick', (e) => {
-        e.stopPropagation(); e.preventDefault();
-        startEditing(id, el, span);
-      });
-
-      el.addEventListener('mousedown', (e) => {
-        if (e.target === handle) { startResize(e, id); return; }
-        if (e.target === delBtn) return;
-        if (el.classList.contains('editing')) return;
-        startDrag(e, id);
-      });
-
-      overlay.appendChild(el);
-      const curBg = document.getElementById('txt-bg').checked;
-      const curBgOp = parseInt(document.getElementById('txt-bg-opacity').value);
-      textElements.push({ id, x, y, text: 'Текст', fontSize: 22, fontWeight: '700', color: '#ffffff', hasBg: curBg, bgOpacity: curBgOp });
-      if (curBg) { el.classList.add('has-bg'); el.style.background = `rgba(0,0,0,${curBgOp/100})`; }
-      selectText(id);
-    }
-
-    function deleteTextById(id) {
-      const el = document.getElementById(`tb-${id}`);
-      if (el) el.remove();
-      textElements = textElements.filter(t => t.id !== id);
-      if (selectedId === id) deselectText();
-      toast('Текст удалён', 'success');
-    }
-
-    function startEditing(id, el, span) {
-      deselectText();
-      selectedId = id;
-      el.classList.add('selected', 'editing');
-      span.contentEditable = true;
-      span.focus();
-      
-      const data = textElements.find(t => t.id === id);
-      if (data) {
-        document.getElementById('txt-color').value = data.color;
-        document.getElementById('txt-weight').value = data.fontWeight;
-        document.getElementById('txt-size').value = data.fontSize;
-        document.getElementById('txt-bg').checked = data.hasBg !== false;
-        document.getElementById('txt-bg-opacity').value = data.bgOpacity || 40;
-        if (data.hasBg !== false) {
-          const editOp = Math.min(100, (data.bgOpacity || 40) + 25);
-          el.style.background = `rgba(0,0,0,${editOp/100})`;
-        }
-      }
-      
-      const range = document.createRange();
-      range.selectNodeContents(span);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      
-      toolbar.classList.add('visible');
-
-      span.onblur = () => {
-        span.contentEditable = false;
-        el.classList.remove('editing');
-        if (!span.textContent.trim()) { deleteTextById(id); return; }
-        updateElementData(id, el, span);
-        const d = textElements.find(t => t.id === id);
-        if (d && d.hasBg !== false) {
-          el.style.background = `rgba(0,0,0,${(d.bgOpacity || 40)/100})`;
-        } else if (d) {
-          el.style.background = 'none'; el.classList.remove('has-bg');
-        }
-      };
-
-      span.onkeydown = (e) => {
-        e.stopPropagation();
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          span.blur();
-        }
-      };
-    }
-
-    function selectText(id) {
-      deselectText();
-      selectedId = id;
-      const el = document.getElementById(`tb-${id}`);
-      if(el) el.classList.add('selected');
-      const data = textElements.find(t => t.id === id);
-      if(data) {
-        document.getElementById('txt-color').value = data.color;
-        document.getElementById('txt-weight').value = data.fontWeight;
-        document.getElementById('txt-size').value = data.fontSize;
-        document.getElementById('txt-bg').checked = data.hasBg !== false;
-        document.getElementById('txt-bg-opacity').value = data.bgOpacity || 40;
-      }
-      toolbar.classList.add('visible');
-    }
-
-    function deselectText() {
-      if(selectedId) {
-        const el = document.getElementById(`tb-${selectedId}`);
-        if(el) el.classList.remove('selected');
-      }
-      selectedId = null;
-      toolbar.classList.remove('visible');
-    }
-
-    function applyTextStyle() {
-      if(!selectedId) return;
-      const el = document.getElementById(`tb-${selectedId}`);
-      const data = textElements.find(t => t.id === selectedId);
-      if(!el || !data) return;
-
-      data.color = document.getElementById('txt-color').value;
-      data.fontWeight = document.getElementById('txt-weight').value;
-      data.fontSize = parseInt(document.getElementById('txt-size').value);
-      data.hasBg = document.getElementById('txt-bg').checked;
-      data.bgOpacity = parseInt(document.getElementById('txt-bg-opacity').value);
-
-      el.style.color = data.color;
-      el.style.fontWeight = data.fontWeight;
-      el.style.fontSize = `${data.fontSize}px`;
-
-      if (data.hasBg) {
-        el.classList.add('has-bg');
-        el.style.background = `rgba(0,0,0,${data.bgOpacity / 100})`;
-      } else {
-        el.classList.remove('has-bg');
-        el.style.background = 'none';
-      }
-    }
-
-    function deleteSelectedText() {
-      if (!selectedId) return toast('Сначала выделите текст кликом', 'info');
-      deleteTextById(selectedId);
-    }
-
-    function clearAllText() {
-      overlay.innerHTML = '';
-      textElements = [];
-      deselectText();
-      toast('Все тексты удалены', 'success');
-    }
-
-    function clearTextOverlay() {
-      overlay.innerHTML = '';
-      textElements = [];
-      selectedId = null;
-      toolbar.classList.remove('visible');
-      isTextMode = false;
-      overlay.classList.add('disabled');
-      btnTextMode.classList.remove('btn-primary');
-      btnTextMode.classList.add('btn-secondary');
-      btnTextMode.textContent = '✏️ Текст';
-      document.getElementById('txt-bg').checked = true;
-      document.getElementById('txt-bg-opacity').value = 40;
-    }
-
-    function updateElementData(id, el, span) {
-      const data = textElements.find(t => t.id === id);
-      if(data) {
-        data.text = span.textContent.trim() || 'Текст';
-        data.x = parseInt(el.style.left);
-        data.y = parseInt(el.style.top);
-      }
-    }
-
-    /* Drag & Resize */
-    let dragState = null;
-    document.addEventListener('mousemove', (e) => {
-      if (panState) {
-        const dx = panState.x - e.clientX;
-        const dy = panState.y - e.clientY;
-        resultWrapper.scrollLeft = panState.scrollLeft + dx;
-        resultWrapper.scrollTop = panState.scrollTop + dy;
-        return;
-      }
-      if(!dragState) return;
-      e.preventDefault();
-      const el = document.getElementById(`tb-${dragState.id}`);
-      if(!el) return;
-
-      if(dragState.type === 'move') {
-        const nx = dragState.startX + (e.clientX - dragState.mouseX) / zoomLevel;
-        const ny = dragState.startY + (e.clientY - dragState.mouseY) / zoomLevel;
-        el.style.left = `${Math.max(0, nx)}px`;
-        el.style.top = `${Math.max(0, ny)}px`;
-      } else if(dragState.type === 'resize') {
-        const delta = (e.clientX - dragState.mouseX + e.clientY - dragState.mouseY) / 2 / zoomLevel;
-        const newSize = Math.max(12, Math.min(150, dragState.startSize + delta));
-        el.style.fontSize = `${newSize}px`;
-        const data = textElements.find(t => t.id === dragState.id);
-        if(data) data.fontSize = newSize;
-        document.getElementById('txt-size').value = newSize;
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      if(dragState) {
-        const el = document.getElementById(`tb-${dragState.id}`);
-        if(el) {
-          const span = el.querySelector('.tb-text');
-          updateElementData(dragState.id, el, span);
-        }
-        dragState = null;
-      }
-    });
-
-    function startDrag(e, id) {
-      const el = document.getElementById(`tb-${id}`);
-      dragState = {
-        type: 'move', id,
-        startX: parseInt(el.style.left), startY: parseInt(el.style.top),
-        mouseX: e.clientX, mouseY: e.clientY
-      };
-    }
-
-    function startResize(e, id) {
-      e.stopPropagation();
-      const el = document.getElementById(`tb-${id}`);
-      const data = textElements.find(t => t.id === id);
-      dragState = {
-        type: 'resize', id,
-        startSize: data ? data.fontSize : 32,
-        mouseX: e.clientX, mouseY: e.clientY
-      };
-    }
-
-    /* ===== EXPORT WITH TEXT ===== */
-    function renderTextToCanvas() {
-      const ctx = canvas.getContext('2d');
-      if (!baseImage || !baseImage.complete || baseImage.naturalWidth === 0) return;
-      ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-      
-      if(textElements.length === 0) return;
-
-      const oW = overlay.clientWidth;
-      const oH = overlay.clientHeight;
-      const scaleX = canvas.width / oW;
-      const scaleY = canvas.height / oH;
-
-      ctx.textBaseline = 'top';
-      textElements.forEach(t => {
-        const fontSize = t.fontSize * scaleY;
-        ctx.font = `${t.fontWeight} ${fontSize}px Inter, system-ui, sans-serif`;
-        
-        const x = t.x * scaleX;
-        let y = t.y * scaleY;
-        const padX = 10 * scaleX;
-        const padY = 6 * scaleY;
-        
-        const lines = t.text.split('\n');
-
-        if (t.hasBg !== false) {
-          const bgAlpha = (t.bgOpacity || 40) / 100;
-          let maxW = 0;
-          lines.forEach(line => { const m = ctx.measureText(line); if (m.width > maxW) maxW = m.width; });
-          const textH = lines.length * fontSize * 1.25;
-
-          ctx.fillStyle = `rgba(0,0,0,${bgAlpha})`;
-          const rx = x - padX, ry = y - padY, rw = maxW + padX * 2, rh = textH + padY * 2;
-          const r = 6 * scaleY;
-          ctx.beginPath();
-          ctx.moveTo(rx + r, ry);
-          ctx.lineTo(rx + rw - r, ry);
-          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r);
-          ctx.lineTo(rx + rw, ry + rh - r);
-          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh);
-          ctx.lineTo(rx + r, ry + rh);
-          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r);
-          ctx.lineTo(rx, ry + r);
-          ctx.quadraticCurveTo(rx, ry, rx + r, ry);
-          ctx.closePath();
-          ctx.fill();
-        }
-
-        ctx.fillStyle = t.color;
-        lines.forEach(line => {
-          ctx.fillText(line, x, y);
-          y += fontSize * 1.25;
-        });
-      });
-    }
-
-    function download() {
-      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
-      renderTextToCanvas();
-      const fmt = document.getElementById('fmt').value;
-      const mime = fmt==='jpeg'?'image/jpeg':fmt==='webp'?'image/webp':'image/png';
-      const ext = fmt==='jpeg'?'jpg':fmt;
-      canvas.toBlob(blob => {
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `preview_${Date.now()}.${ext}`; a.click();
-        toast('Скачано с текстом','success');
-      }, mime, 0.92);
-    }
-
-    async function copyToClipboard() {
-      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
-      renderTextToCanvas();
-      try {
-        const pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-        await navigator.clipboard.write([new ClipboardItem({'image/png': pngBlob})]);
-        toast('Скопировано в буфер','success');
-      } catch(e) { toast('Ошибка копирования или браузер не поддерживает','error'); }
-    }
-
-    function openPreview() {
-      if(!baseImage || !baseImage.src) return toast('Нет изображения','error');
-      renderTextToCanvas();
-      const fmt = document.getElementById('fmt').value;
-      const mime = fmt==='jpeg'?'image/jpeg':fmt==='webp'?'image/webp':'image/png';
-      canvas.toBlob(blob => {
-        previewImg.src = URL.createObjectURL(blob);
-        previewInfo.textContent = `${canvas.width}×${canvas.height} • ${fmt.toUpperCase()} • Esc — выйти`;
-        previewOverlay.classList.add('visible');
-        document.body.style.overflow = 'hidden';
-      }, mime, 0.95);
-    }
-
-    function closePreview() {
-      previewOverlay.classList.remove('visible');
-      document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', e => {
-      if (previewOverlay.classList.contains('visible')) {
-        if (e.key === 'Escape') { closePreview(); return; }
-        return;
-      }
-      if (e.target.isContentEditable || e.target.closest('.text-box') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        if (e.key === 'Escape' && e.target.isContentEditable) { e.target.blur(); }
-        return;
-      }
-      
-      if (e.key === 'Escape') {
-        if (selectedId) { deselectText(); return; }
-        if (isTextMode) { toggleTextMode(); return; }
-      }
-      if(e.code==='Space' && srcType==='file' && getPlayer().src) { 
-        e.preventDefault(); 
-        getPlayer().paused ? getPlayer().play() : getPlayer().pause(); 
-      }
-      if(e.key==='Delete' && selectedId && !document.querySelector('.text-box.editing')) deleteSelectedText();
-    });
-  </script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
