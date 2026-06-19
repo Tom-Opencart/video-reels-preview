@@ -27,7 +27,7 @@ export function canvasToScreen(cx, cy) {
 export function initEditor() {
 	canvas = document.getElementById('editor-canvas');
 	ctx = canvas.getContext('2d');
-	container = document.getElementById('canvas-container');
+	container = document.getElementById('canvas-area');
 
 	dpr = window.devicePixelRatio || 1;
 	resizeCanvas();
@@ -93,11 +93,6 @@ export function render() {
 	}
 
 	drawSelection();
-
-	const placeholder = document.getElementById('canvas-placeholder');
-	if (placeholder) {
-		placeholder.classList.toggle('hidden', state.layers.length > 0);
-	}
 }
 
 function drawCheckerboard(w, h) {
