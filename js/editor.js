@@ -46,7 +46,9 @@ export function initEditor() {
   containerEl.addEventListener('touchmove', onTouchMove, { passive: false });
   containerEl.addEventListener('touchend', onTouchEnd);
 
-  window.addEventListener('preset:changed', () => { _needsResize = true; render(); });
+  window.addEventListener('preset:changed', () => {
+    animatePresetChange();
+  });
 
   render();
 }
@@ -83,6 +85,24 @@ function resizeCanvas() {
 
 export function getEditorExports() {
   return { canvas, ctx, displayWidth, displayHeight, offsetX, offsetY };
+}
+
+function animatePresetChange() {
+  canvas.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+  canvas.style.opacity = '0';
+  canvas.style.transform = 'scale(0.95)';
+
+  setTimeout(() => {
+    _needsResize = true;
+    resizeCanvas();
+
+    canvas.style.opacity = '1';
+    canvas.style.transform = 'scale(1)';
+
+    setTimeout(() => {
+      canvas.style.transition = '';
+    }, 220);
+  }, 200);
 }
 
 // ─── Render ───
