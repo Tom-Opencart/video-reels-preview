@@ -4,7 +4,6 @@ import { initTools } from './tools.js';
 import { initLayers, updateLayerList, deleteLayer } from './layers.js';
 import { initFilters } from './filters.js';
 import { initHistory, undo, redo, saveSnapshot } from './history.js';
-import { initPresets } from './presets.js';
 import { initTemplates, saveTemplate, loadTemplate } from './templates.js';
 import { initExport, exportImage, copyToClipboard, openPreview } from './export.js';
 import { initVideoSource } from './video-source.js';
@@ -15,7 +14,6 @@ initTools();
 initLayers();
 initFilters();
 initHistory();
-initPresets();
 initTemplates();
 initExport();
 initVideoSource();
@@ -32,13 +30,11 @@ mobileTabs.forEach(tab => {
 		if (panel === 'tools') {
 			const left = document.getElementById('panel-left');
 			left.classList.toggle('mobile-open');
-			document.getElementById('panel-right').classList.remove('mobile-open');
 			tab.classList.toggle('active', left.classList.contains('mobile-open'));
 		} else if (panel === 'layers') {
-			const right = document.getElementById('panel-right');
-			right.classList.toggle('mobile-open');
-			document.getElementById('panel-left').classList.remove('mobile-open');
-			tab.classList.toggle('active', right.classList.contains('mobile-open'));
+			const left = document.getElementById('panel-left');
+			left.classList.toggle('mobile-open');
+			tab.classList.toggle('active', left.classList.contains('mobile-open'));
 		} else if (panel === 'filters') {
 			const fpanel = document.getElementById('filters-panel');
 			const wasHidden = fpanel.style.display === 'none';

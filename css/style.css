@@ -59,7 +59,7 @@ body {
 /* ---- App Layout ---- */
 .app {
   display: grid;
-  grid-template-columns: 250px 1fr 220px;
+  grid-template-columns: 270px 1fr;
   height: calc(100vh - 48px);
   overflow: hidden;
 }
@@ -73,10 +73,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-.panel-right {
-  border-right: none;
-  border-left: 1px solid var(--border);
 }
 .panel-section {
   padding: 10px 0;
@@ -130,20 +126,16 @@ body {
 }
 #editor-canvas.tool-select { cursor: default; }
 
-/* ---- Video Wrapper ---- */
-.video-wrapper {
-  position: absolute;
-  bottom: 12px; left: 50%;
-  transform: translateX(-50%);
-  width: 320px;
+/* ---- Video Mini (in left panel) ---- */
+.video-mini {
+  width: 100%;
   background: #000;
-  border-radius: var(--radius);
+  border-radius: 8px;
   overflow: hidden;
   aspect-ratio: 16/9;
-  z-index: 10;
-  border: 2px solid var(--border);
+  margin-bottom: 8px;
 }
-.video-wrapper video, .video-wrapper iframe {
+.video-mini video, .video-mini iframe {
   width: 100%; height: 100%; display: block;
 }
 
@@ -321,12 +313,7 @@ body {
 
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
-  .app { grid-template-columns: 220px 1fr; }
-  .panel-right { display: none; }
-  .panel-right.mobile-open {
-    display: flex; position: fixed; right: 0; top: 48px; bottom: 0;
-    width: 260px; z-index: 100; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-  }
+  .app { grid-template-columns: 240px 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -341,12 +328,6 @@ body {
     display: flex; position: fixed; left: 0; top: 48px; bottom: 50px;
     width: 280px; z-index: 100; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
   }
-  .panel-right { display: none; }
-  .panel-right.mobile-open {
-    display: flex; position: fixed; right: 0; top: 48px; bottom: 50px;
-    width: 260px; z-index: 100; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-  }
-  .video-wrapper { width: 240px; }
   .mobile-bar { display: flex; }
   .toast-container { bottom: 60px; }
 }

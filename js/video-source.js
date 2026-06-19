@@ -57,16 +57,14 @@ function switchSourceTab(type) {
 }
 
 function hideVideoPlayer() {
-	const wrapper = document.getElementById('video-wrapper');
 	const panel = document.getElementById('video-controls-panel');
-	if (wrapper) wrapper.style.display = 'none';
+	const mini = document.getElementById('video-mini');
+	if (mini) mini.innerHTML = '';
 	if (panel) panel.style.display = 'none';
 }
 
 function showVideoPlayer() {
-	const wrapper = document.getElementById('video-wrapper');
 	const panel = document.getElementById('video-controls-panel');
-	if (wrapper) wrapper.style.display = 'block';
 	if (panel) panel.style.display = 'block';
 }
 
@@ -93,8 +91,8 @@ export function loadYouTube(url) {
 	if (!match) return toast('Неверная ссылка YouTube', 'error');
 
 	ytId = match[1];
-	const wrapper = document.getElementById('video-wrapper');
-	wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+	const mini = document.getElementById('video-mini');
+	mini.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
 	showVideoPlayer();
 
 	const slider = document.getElementById('time-slider');
@@ -110,8 +108,8 @@ export function loadRutube(url) {
 	if (!match) return toast('Неверная ссылка Rutube', 'error');
 
 	rtId = match[1];
-	const wrapper = document.getElementById('video-wrapper');
-	wrapper.innerHTML = `<iframe src="https://rutube.ru/play/embed/${rtId}" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+	const mini = document.getElementById('video-mini');
+	mini.innerHTML = `<iframe src="https://rutube.ru/play/embed/${rtId}" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
 	showVideoPlayer();
 
 	const slider = document.getElementById('time-slider');
@@ -123,8 +121,8 @@ export function loadRutube(url) {
 }
 
 export function loadMp4Url(url) {
-	const wrapper = document.getElementById('video-wrapper');
-	wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
+	const mini = document.getElementById('video-mini');
+	mini.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
 
 	const player = document.getElementById('player');
 	player.src = url;
@@ -150,8 +148,8 @@ export function handleFile(file) {
 
 	document.getElementById('file-info').textContent = `📎 ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
 
-	const wrapper = document.getElementById('video-wrapper');
-	wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
+	const mini = document.getElementById('video-mini');
+	mini.innerHTML = '<video id="player" controls crossorigin="anonymous"></video>';
 
 	const player = document.getElementById('player');
 	player.src = URL.createObjectURL(file);

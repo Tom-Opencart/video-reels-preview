@@ -40,6 +40,7 @@
 
       <div class="panel-section" id="video-controls-panel" style="display:none">
         <div class="panel-title">Видео</div>
+        <div class="video-mini" id="video-mini"></div>
         <div class="time-control">
           <span class="time-label" id="time-display">0:00 / 0:00</span>
           <input type="range" id="time-slider" min="0" max="100" value="0" step="0.1">
@@ -84,36 +85,6 @@
       </div>
 
       <div class="panel-section">
-        <div class="panel-title">Пресеты</div>
-        <select class="input-field" id="preset-select">
-          <option value="shorts">YouTube Shorts (9:16)</option>
-          <option value="square">Instagram (1:1)</option>
-          <option value="youtube">YouTube (16:9)</option>
-          <option value="custom">Кастомный...</option>
-        </select>
-        <div id="custom-size" style="display:none" class="custom-size">
-          <input type="number" id="custom-w" placeholder="Ш" class="input-field input-sm" min="100" max="4096">
-          <span>×</span>
-          <input type="number" id="custom-h" placeholder="В" class="input-field input-sm" min="100" max="4096">
-          <button class="btn btn-sm" id="btn-apply-size">OK</button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Центр: холст -->
-    <div class="canvas-area" id="canvas-area">
-      <div class="video-wrapper" id="video-wrapper" style="display:none">
-        <video id="player" controls crossorigin="anonymous"></video>
-      </div>
-      <div class="canvas-container" id="canvas-container">
-        <canvas id="editor-canvas"></canvas>
-        <div class="zoom-badge" id="zoom-badge">100%</div>
-      </div>
-    </div>
-
-    <!-- Правая панель: слои -->
-    <aside class="panel panel-right" id="panel-right">
-      <div class="panel-section">
         <div class="panel-title">Слои</div>
         <div class="layer-actions">
           <button class="btn btn-sm" id="btn-add-layer" title="Добавить слой">+</button>
@@ -141,6 +112,14 @@
         </div>
       </div>
     </aside>
+
+    <!-- Центр: холст -->
+    <div class="canvas-area" id="canvas-area">
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="editor-canvas"></canvas>
+        <div class="zoom-badge" id="zoom-badge">100%</div>
+      </div>
+    </div>
   </main>
 
   <nav class="mobile-bar" id="mobile-bar">
