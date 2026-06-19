@@ -69,7 +69,7 @@ export function loadYouTube(url) {
 
 	ytId = match[1];
 	const playerEl = document.getElementById('video-player');
-	playerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+	playerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&playsinline=1" frameborder="0" allow="autoplay" style="width:100%;height:100%;"></iframe>`;
 	showVideoPlayer();
 
 	const slider = document.getElementById('time-slider');

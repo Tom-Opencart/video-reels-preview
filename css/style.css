@@ -148,6 +148,8 @@ body {
   height: 100%;
   display: block;
   object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ---- Zoom Badge ---- */
