@@ -37,7 +37,9 @@ async function captureFrame() {
     y: 0,
   });
 
-  wrapper.style.display = 'none';
+  wrapper.classList.remove('visible');
+  wrapper.innerHTML = '';
+  document.getElementById('canvas-container').style.display = '';
   const bar = document.getElementById('player-bar');
   if (bar) bar.style.display = 'none';
   toast('Кадр захвачен');

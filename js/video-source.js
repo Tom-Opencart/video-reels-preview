@@ -60,6 +60,12 @@ function switchTab(type) {
   } else {
     document.getElementById('src-auto').classList.add('active');
   }
+
+  videoWrapper().classList.remove('visible');
+  videoWrapper().innerHTML = '<video id="player" autoplay muted playsinline crossorigin="anonymous"></video>';
+  document.getElementById('canvas-container').style.display = '';
+  playerBar().style.display = 'none';
+  currentSource = null;
 }
 
 function onUrlInput() {
@@ -93,8 +99,9 @@ function loadYouTube(url) {
   if (!id) { toast('Не удалось извлечь ID YouTube', 'warning'); return; }
 
   currentSource = 'youtube';
-  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&modestbranding=1&autoplay=1" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
-  videoWrapper().style.display = 'block';
+  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&modestbranding=1&autoplay=1" frameborder="0" allowfullscreen style="width:100%;height:100%;border:none"></iframe>`;
+  videoWrapper().classList.add('visible');
+  document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'none';
   toast('YouTube загружен');
 }
@@ -104,8 +111,9 @@ function loadRutube(url) {
   if (!m) { toast('Не удалось извлечь ID Rutube', 'warning'); return; }
 
   currentSource = 'rutube';
-  videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
-  videoWrapper().style.display = 'block';
+  videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;border:none"></iframe>`;
+  videoWrapper().classList.add('visible');
+  document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'none';
   toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
@@ -115,7 +123,8 @@ function loadMp4Url(url) {
   const p = player();
   p.src = url;
   p.play().catch(() => {});
-  videoWrapper().style.display = 'block';
+  videoWrapper().classList.add('visible');
+  document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
   updatePlayBtn();
 }
@@ -129,7 +138,8 @@ function handleFile(file) {
   const p = player();
   p.src = URL.createObjectURL(file);
   p.play().catch(() => {});
-  videoWrapper().style.display = 'block';
+  videoWrapper().classList.add('visible');
+  document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
   updatePlayBtn();
   const size = (file.size / 1024 / 1024).toFixed(1);
