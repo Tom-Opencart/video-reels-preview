@@ -108,6 +108,10 @@ function render() {
   ctx.scale(totalScale, totalScale);
   ctx.translate(-presetW / 2, -presetH / 2);
 
+  if (state.layers.length === 0) {
+    drawEmptyState(ctx, presetW, presetH);
+  }
+
   for (const layer of state.layers) {
     if (layer.visible === false) continue;
     renderLayer(ctx, layer);
@@ -124,6 +128,60 @@ function render() {
 }
 
 // ─── Render Layer ───
+
+function drawEmptyState(ctx, w, h) {
+  const cx = w / 2;
+  const cy = h / 2;
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Иконка камеры
+  const iconSize = Math.min(w, h) * 0.12;
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = iconSize * 0.08;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Прямоугольник камеры
+  const camW = iconSize * 1.4;
+  const camH = iconSize;
+  const camR = iconSize * 0.12;
+  const camX = cx - camW / 2;
+  const camY = cy - iconSize * 1.2;
+
+  ctx.beginPath();
+  ctx.moveTo(camX + camR, camY);
+  ctx.lineTo(camX + camW - camR, camY);
+  ctx.quadraticCurveTo(camX + camW, camY, camX + camW, camY + camR);
+  ctx.lineTo(camX + camW, camY + camH - camR);
+  ctx.quadraticCurveTo(camX + camW, camY + camH, camX + camW - camR, camY + camH);
+  ctx.lineTo(camX + camR, camY + camH);
+  ctx.quadraticCurveTo(camX, camY + camH, camX, camY + camH - camR);
+  ctx.lineTo(camX, camY + camR);
+  ctx.quadraticCurveTo(camX, camY, camX + camR, camY);
+  ctx.closePath();
+  ctx.stroke();
+
+  // Кружок объектива
+  ctx.beginPath();
+  ctx.arc(cx, camY + camH / 2, iconSize * 0.28, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Текст
+  const fontSize = Math.max(20, Math.min(40, w * 0.035));
+  ctx.font = `600 ${fontSize}px Inter, system-ui, sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillText('Загрузите видео', cx, cy + iconSize * 0.6);
+
+  const subSize = Math.max(14, Math.min(24, w * 0.025));
+  ctx.font = `400 ${subSize}px Inter, system-ui, sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillText('и нажмите «Снять кадр»', cx, cy + iconSize * 0.6 + fontSize * 1.4);
+
+  ctx.restore();
+}
 
 export function renderLayer(ctx, layer) {
   ctx.save();
