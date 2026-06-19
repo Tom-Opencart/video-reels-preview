@@ -670,6 +670,8 @@
       document.getElementById('btn-auto').disabled = true;
       
       wrapper.innerHTML = '<video id="player" controls crossorigin="anonymous" onloadedmetadata="onMeta()" ontimeupdate="onTime()" onerror="onVideoError()"></video>';
+      const tc = document.querySelector('.time-control');
+      if (tc) tc.style.display = '';
       videoControls.style.display = 'flex';
       btnCapture.style.display = 'inline-flex';
     }
@@ -713,10 +715,14 @@
       wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&modestbranding=1&rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
       previewArea.classList.add('visible');
       rtWarning.classList.remove('visible');
-      videoControls.style.display = 'none';
+      const tc = document.querySelector('.time-control');
+      if (tc) tc.style.display = 'none';
+      videoControls.style.display = 'flex';
+      btnCapture.style.display = 'inline-flex';
+      clearTextOverlay();
       markDone('stage-source', 'YouTube');
       goToStage('stage-video');
-      toast('YouTube видео загружено','success');
+      toast('YouTube видео загружено. Нажмите «Снять кадр» для превью.','success');
     }
 
     /* ===== RUTUBE ===== */
@@ -728,7 +734,11 @@
       wrapper.innerHTML = `<iframe src="https://rutube.ru/play/embed/${rtId}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;inset:0;"></iframe>`;
       previewArea.classList.add('visible');
       rtWarning.classList.add('visible');
-      videoControls.style.display = 'none';
+      const tc = document.querySelector('.time-control');
+      if (tc) tc.style.display = 'none';
+      videoControls.style.display = 'flex';
+      btnCapture.style.display = 'inline-flex';
+      clearTextOverlay();
       markDone('stage-source', 'Rutube');
       goToStage('stage-video');
       toast('Rutube видео загружено','success');
@@ -784,14 +794,23 @@
         canvas.getContext('2d').drawImage(p, 0, 0);
         finalizeCapture();
       } else if(srcType === 'youtube' && ytId) {
-        const img = new Image(); img.crossOrigin='anonymous';
-        img.onload = () => {
-          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-          canvas.getContext('2d').drawImage(img,0,0);
-          finalizeCapture();
-        };
-        img.onerror = () => toast('Не удалось загрузить превью YouTube','error');
-        img.src = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+        const variants = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
+        let loaded = false;
+        variants.forEach((v, i) => {
+          if (loaded) return;
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            if (loaded || img.naturalWidth < 100) return;
+            loaded = true;
+            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            finalizeCapture();
+          };
+          img.onerror = () => {};
+          img.src = `https://img.youtube.com/vi/${ytId}/${v}.jpg`;
+        });
+        setTimeout(() => { if (!loaded) toast('Не удалось загрузить превью YouTube','error'); }, 5000);
       } else {
         toast('Загрузите MP4 файл/ссылку или используйте YouTube','info');
       }
