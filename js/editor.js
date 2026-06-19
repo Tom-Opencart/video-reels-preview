@@ -78,8 +78,6 @@ export function render() {
 	if (hasImage) {
 		ctx.fillStyle = state.background;
 		ctx.fillRect(0, 0, w, h);
-	} else {
-		drawCheckerboard(w, h);
 	}
 
 	for (const layer of state.layers) {
@@ -88,16 +86,6 @@ export function render() {
 	}
 
 	drawSelection();
-}
-
-function drawCheckerboard(w, h) {
-	const size = 16;
-	for (let y = 0; y < h; y += size) {
-		for (let x = 0; x < w; x += size) {
-			ctx.fillStyle = ((x / size) + (y / size)) % 2 === 0 ? '#f0f0f0' : '#e0e0e0';
-			ctx.fillRect(x, y, size, size);
-		}
-	}
 }
 
 function renderLayer(layer) {

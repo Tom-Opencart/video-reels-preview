@@ -128,7 +128,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e5e7eb;
+  background: #f0f0f3;
   overflow: hidden;
   position: relative;
   padding: 0;
@@ -136,8 +136,7 @@ body {
 #editor-canvas {
   display: block;
   cursor: crosshair;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
-  border-radius: 2px;
+  background: #f0f0f3;
 }
 
 /* ---- Video Mini (floating in canvas area) ---- */
