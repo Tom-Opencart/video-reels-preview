@@ -288,6 +288,95 @@ body {
 .toast.info { border-left: 3px solid var(--accent); }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+.panel-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: help;
+  flex-shrink: 0;
+  margin-right: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.panel-help:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---- Help Modal ---- */
+.help-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 2500;
+  background: rgba(0,0,0,0.5);
+  align-items: center; justify-content: center;
+}
+.help-overlay.visible { display: flex; }
+.help-modal {
+  background: var(--bg-page);
+  border-radius: 14px;
+  padding: 28px 32px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  position: relative;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.help-modal h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.help-modal p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.help-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.help-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+}
+.help-step strong {
+  white-space: nowrap;
+  color: var(--text-primary);
+  min-width: 110px;
+}
+.help-step span {
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.help-tip {
+  background: var(--accent-light);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--accent);
+}
+.help-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  background: none; border: none;
+  font-size: 1.2rem; color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.help-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+
 /* ---- Preview Overlay ---- */
 .preview-overlay {
   display: none; position: fixed; inset: 0; z-index: 2000;

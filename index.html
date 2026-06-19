@@ -127,6 +127,7 @@
       <div class="panel-section collapsed" id="section-templates">
         <div class="panel-header" data-section="section-templates">
           <span class="panel-title">💾 Шаблоны</span>
+          <span class="panel-help" id="btn-help-templates" title="Справка">?</span>
           <span class="panel-arrow">▾</span>
         </div>
         <div class="panel-body">
@@ -170,6 +171,22 @@
   </div>
 
   <canvas id="offscreen-canvas" style="display:none"></canvas>
+
+  <div class="help-overlay" id="help-overlay">
+    <div class="help-modal">
+      <button class="help-close" id="help-close">✕</button>
+      <h2>💾 Шаблоны</h2>
+      <p>Шаблон — это сохранённое состояние редактора: все слои, фильтры, фон и размер холста. Позволяет не настраивать обложку заново.</p>
+      <div class="help-steps">
+        <div class="help-step"><strong>💾 Сохранить</strong><span>Запоминает текущий макет (слои, фон, фильтры) в браузере. Максимум 20 шаблонов.</span></div>
+        <div class="help-step"><strong>📋 Выбрать</strong><span>Восстанавливает сохранённый макет. Просто выберите из списка — все слои и настройки вернутся.</span></div>
+        <div class="help-step"><strong>🗑 Удалить</strong><span>Убирает выбранный шаблон из списка.</span></div>
+        <div class="help-step"><strong>📤 Экспорт</strong><span>Скачивает все шаблоны как JSON-файл для переноса на другой компьютер.</span></div>
+        <div class="help-step"><strong>📥 Импорт</strong><span>Загружает шаблоны из JSON-файла (ранее экспортированного).</span></div>
+      </div>
+      <p class="help-tip">💡 Пример: сделали обложку с текстом и логотипом → сохранили как «Мой стиль» → в следующий раз выбрали из списка и заменили только кадр.</p>
+    </div>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

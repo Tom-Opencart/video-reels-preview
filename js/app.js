@@ -74,7 +74,36 @@ mobileTabs.forEach(tab => {
 });
 
 
+// Help modal
+document.getElementById('btn-help-templates').addEventListener('click', (e) => {
+	e.stopPropagation();
+	const overlay = document.getElementById('help-overlay');
+	overlay.classList.add('visible');
+	document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('help-close').addEventListener('click', () => {
+	document.getElementById('help-overlay').classList.remove('visible');
+	document.body.style.overflow = '';
+});
+
+document.getElementById('help-overlay').addEventListener('click', (e) => {
+	if (e.target === e.currentTarget) {
+		e.currentTarget.classList.remove('visible');
+		document.body.style.overflow = '';
+	}
+});
+
 document.addEventListener('keydown', (e) => {
+	if (e.key === 'Escape') {
+		const helpOverlay = document.getElementById('help-overlay');
+		if (helpOverlay.classList.contains('visible')) {
+			helpOverlay.classList.remove('visible');
+			document.body.style.overflow = '';
+			return;
+		}
+	}
+
 	if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
 		return;
 	}
