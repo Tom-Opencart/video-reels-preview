@@ -42,12 +42,12 @@ export function initEditor() {
 function resizeCanvas() {
 	const pw = state.preset.width;
 	const ph = state.preset.height;
-	const cw = container.clientWidth - 32;
-	const ch = container.clientHeight - 32;
+	const cw = container.clientWidth - 16;
+	const ch = container.clientHeight - 16;
 
 	const scaleX = cw / pw;
 	const scaleY = ch / ph;
-	scaleToDisplay = Math.min(scaleX, scaleY, 1);
+	scaleToDisplay = Math.min(scaleX, scaleY);
 
 	displayW = Math.round(pw * scaleToDisplay * state.zoom);
 	displayH = Math.round(ph * scaleToDisplay * state.zoom);
