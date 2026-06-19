@@ -4,6 +4,7 @@ import { toast } from './utils.js';
 const player = () => document.getElementById('player');
 const videoWrapper = () => document.getElementById('video-wrapper');
 const videoControls = () => document.getElementById('video-controls');
+const videoHint = () => document.getElementById('video-hint');
 
 let currentSource = null;
 
@@ -27,6 +28,16 @@ export function initVideoSource() {
 
   document.getElementById('time-slider').addEventListener('input', e => seek(parseFloat(e.target.value)));
   player().addEventListener('timeupdate', onTimeUpdate);
+
+  const p = player();
+  p.addEventListener('click', () => {
+    if (p.paused) { p.play().catch(() => {}); toast('▶ Воспроизведение', 'info'); }
+    else { p.pause(); toast('⏸ Пауза', 'info'); }
+  });
+  p.addEventListener('dblclick', () => {
+    p.muted = !p.muted;
+    toast(p.muted ? '🔇 Звук выключен' : '🔊 Звук включён', 'info');
+  });
 }
 
 function switchTab(type) {
@@ -71,8 +82,9 @@ function loadYouTube(url) {
   if (!id) { toast('Не удалось извлечь ID YouTube', 'warning'); return; }
 
   currentSource = 'youtube';
-  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
+  videoWrapper().innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?rel=0&controls=0&modestbranding=1&autoplay=1" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
+  videoHint().style.display = '';
   videoControls().style.display = 'none';
   toast('YouTube загружен');
 }
@@ -84,6 +96,7 @@ function loadRutube(url) {
   currentSource = 'rutube';
   videoWrapper().innerHTML = `<iframe src="https://rutube.ru/play/embed/${m[1]}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;top:0;left:0"></iframe>`;
   videoWrapper().style.display = 'block';
+  videoHint().style.display = '';
   videoControls().style.display = 'none';
   toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
@@ -92,7 +105,9 @@ function loadMp4Url(url) {
   currentSource = 'mp4';
   const p = player();
   p.src = url;
+  p.play().catch(() => {});
   videoWrapper().style.display = 'block';
+  videoHint().style.display = '';
   videoControls().style.display = '';
 }
 
@@ -104,6 +119,7 @@ function handleFile(file) {
   currentSource = 'file';
   const p = player();
   p.src = URL.createObjectURL(file);
+  p.play().catch(() => {});
   videoWrapper().style.display = 'block';
   videoControls().style.display = '';
   const size = (file.size / 1024 / 1024).toFixed(1);

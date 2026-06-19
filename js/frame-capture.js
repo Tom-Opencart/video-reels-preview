@@ -38,6 +38,8 @@ async function captureFrame() {
   });
 
   wrapper.style.display = 'none';
+  const hint = document.getElementById('video-hint');
+  if (hint) hint.style.display = 'none';
   toast('Кадр захвачен');
 }
 

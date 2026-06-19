@@ -305,6 +305,16 @@ select {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  cursor: pointer;
+}
+
+.video-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 4px 0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
 }
 
 #canvas-container {
