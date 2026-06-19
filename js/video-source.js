@@ -7,11 +7,6 @@ let srcType = 'auto';
 let playerDuration = 0;
 
 export function initVideoSource() {
-	const tabs = document.querySelectorAll('.source-tabs .tab');
-	tabs.forEach(tab => {
-		tab.addEventListener('click', () => switchSourceTab(tab.dataset.src));
-	});
-
 	const urlInput = document.getElementById('source-url');
 	urlInput.addEventListener('input', () => {
 		document.getElementById('btn-load').disabled = !urlInput.value.trim();
@@ -37,23 +32,6 @@ export function initVideoSource() {
 		const player = document.getElementById('player');
 		if (player) player.currentTime = parseFloat(this.value);
 	});
-}
-
-function switchSourceTab(type) {
-	srcType = type;
-	document.querySelectorAll('.source-tabs .tab').forEach(t => {
-		t.classList.toggle('active', t.dataset.src === type);
-	});
-	const urlInput = document.getElementById('source-url');
-	if (urlInput) {
-		urlInput.value = '';
-		urlInput.placeholder = type === 'youtube' ? 'YouTube URL...' :
-			type === 'rutube' ? 'Rutube URL...' :
-			type === 'file' ? 'MP4 URL или файл...' :
-			'Вставьте ссылку...';
-	}
-	document.getElementById('btn-load').disabled = true;
-	hideVideoPlayer();
 }
 
 function hideVideoPlayer() {

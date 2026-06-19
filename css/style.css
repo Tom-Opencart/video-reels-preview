@@ -109,18 +109,8 @@ body {
   display: none;
 }
 
-/* ---- Source Tabs ---- */
-.source-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
-.source-tabs .tab {
-  flex: 1; padding: 6px 0; border: 1px solid var(--border); border-radius: 6px;
-  background: var(--bg-page); color: var(--text-secondary); cursor: pointer;
-  font-size: 0.7rem; font-weight: 600; transition: all 0.15s ease;
-  text-align: center;
-}
-.source-tabs .tab:hover { background: var(--bg-hover); color: var(--text-primary); }
-.source-tabs .tab.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
-
-.source-input { display: flex; gap: 6px; }
+/* ---- Source Input ---- */
+.source-input { display: flex; gap: 6px; margin-bottom: 8px; }
 .source-input .input-field { flex: 1; }
 
 /* ---- Canvas Area ---- */
