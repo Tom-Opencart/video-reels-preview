@@ -7,18 +7,6 @@ const playerBar = () => document.getElementById('player-bar');
 
 let currentSource = null;
 
-function updateWrapperAspect() {
-  const vw = videoWrapper();
-  if (!vw) return;
-  const area = document.querySelector('.canvas-area');
-  const ratio = state.preset.height / state.preset.width;
-  const containerW = area?.clientWidth || vw.parentElement?.clientWidth || 600;
-  const maxH = area?.clientHeight || window.innerHeight * 0.7;
-  let h = containerW * ratio;
-  if (h > maxH) h = maxH;
-  vw.style.height = h + 'px';
-}
-
 export function initVideoSource() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.src));
@@ -60,10 +48,6 @@ export function initVideoSource() {
   if (btnMute) btnMute.addEventListener('click', toggleMute);
   if (playerSeek) playerSeek.addEventListener('input', e => {
     player().currentTime = parseFloat(e.target.value);
-  });
-
-  window.addEventListener('preset:changed', () => {
-    updateWrapperAspect();
   });
 }
 
@@ -119,7 +103,6 @@ function loadYouTube(url) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
-  updateWrapperAspect();
   updatePlayBtn();
   toast('YouTube загружен');
 }
@@ -133,7 +116,6 @@ function loadRutube(url) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
-  updateWrapperAspect();
   updatePlayBtn();
   toast('Rutube загружен (CORS может ограничить захват)', 'warning');
 }
@@ -146,7 +128,6 @@ function loadMp4Url(url) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
-  updateWrapperAspect();
   updatePlayBtn();
 }
 
@@ -162,7 +143,6 @@ function handleFile(file) {
   videoWrapper().classList.add('visible');
   document.getElementById('canvas-container').style.display = 'none';
   playerBar().style.display = 'flex';
-  updateWrapperAspect();
   updatePlayBtn();
   const size = (file.size / 1024 / 1024).toFixed(1);
   toast(`Загружено: ${file.name} (${size} МБ)`);
