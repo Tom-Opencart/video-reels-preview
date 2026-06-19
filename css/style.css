@@ -476,6 +476,12 @@ select {
   font-family: var(--font-mono);
 }
 
+/* ===== FILTER ROWS ===== */
+.filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.8rem; }
+.filter-row label { min-width: 70px; color: var(--text-secondary); }
+.filter-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.filter-row .filter-val { min-width: 36px; text-align: right; font-family: var(--font-mono); font-size: 0.75rem; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .app {
