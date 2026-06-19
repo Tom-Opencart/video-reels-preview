@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { initEditor, render, resizeCanvas } from './editor.js';
+import { initEditor, render, resizeCanvas, updateCursor } from './editor.js';
 import { initTools } from './tools.js';
 import { initLayers, updateLayerList, deleteLayer } from './layers.js';
 import { initFilters } from './filters.js';
@@ -7,7 +7,6 @@ import { initHistory, undo, redo, saveSnapshot } from './history.js';
 import { initTemplates, saveTemplate, loadTemplate } from './templates.js';
 import { initExport, exportImage, copyToClipboard, openPreview } from './export.js';
 import { initVideoSource } from './video-source.js';
-import { updateCursor } from './editor.js';
 
 initEditor();
 initTools();

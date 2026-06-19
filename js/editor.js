@@ -39,7 +39,7 @@ export function initEditor() {
 	window.addEventListener('resize', resizeCanvas);
 }
 
-function resizeCanvas() {
+export function resizeCanvas() {
 	const pw = state.preset.width;
 	const ph = state.preset.height;
 	const cw = container.clientWidth - 16;
