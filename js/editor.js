@@ -119,7 +119,7 @@ function render() {
 
 // ─── Render Layer ───
 
-function renderLayer(ctx, layer) {
+export function renderLayer(ctx, layer) {
   ctx.save();
 
   if (layer.rotation) {
