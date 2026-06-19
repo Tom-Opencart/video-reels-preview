@@ -26,20 +26,27 @@ export function initVideoSource() {
   });
 
   const p = player();
+  if (!p) { console.error('Элемент #player не найден'); return; }
   p.addEventListener('timeupdate', onTimeUpdate);
   p.addEventListener('play', () => updatePlayBtn());
   p.addEventListener('pause', () => updatePlayBtn());
   p.addEventListener('loadedmetadata', () => {
     const seek = document.getElementById('player-seek');
-    seek.max = p.duration;
+    if (seek) seek.max = p.duration;
     onTimeUpdate();
   });
 
-  document.getElementById('btn-play').addEventListener('click', togglePlay);
-  document.getElementById('btn-rw').addEventListener('click', () => skip(-10));
-  document.getElementById('btn-ff').addEventListener('click', () => skip(10));
-  document.getElementById('btn-mute').addEventListener('click', toggleMute);
-  document.getElementById('player-seek').addEventListener('input', e => {
+  const btnPlay = document.getElementById('btn-play');
+  const btnRw = document.getElementById('btn-rw');
+  const btnFf = document.getElementById('btn-ff');
+  const btnMute = document.getElementById('btn-mute');
+  const playerSeek = document.getElementById('player-seek');
+
+  if (btnPlay) btnPlay.addEventListener('click', togglePlay);
+  if (btnRw) btnRw.addEventListener('click', () => skip(-10));
+  if (btnFf) btnFf.addEventListener('click', () => skip(10));
+  if (btnMute) btnMute.addEventListener('click', toggleMute);
+  if (playerSeek) playerSeek.addEventListener('input', e => {
     player().currentTime = parseFloat(e.target.value);
   });
 }
