@@ -20,6 +20,8 @@ let isPanning = false;
 let panStartX = 0, panStartY = 0;
 let panStartPanX = 0, panStartPanY = 0;
 
+let _touchState = null;
+
 export function initEditor() {
   canvas = document.getElementById('editor-canvas');
   ctx = canvas.getContext('2d');
@@ -39,6 +41,10 @@ export function initEditor() {
   canvas.addEventListener('mousedown', onCanvasMouseDown);
   window.addEventListener('mousemove', onCanvasMouseMove);
   window.addEventListener('mouseup', onCanvasMouseUp);
+
+  containerEl.addEventListener('touchstart', onTouchStart, { passive: false });
+  containerEl.addEventListener('touchmove', onTouchMove, { passive: false });
+  containerEl.addEventListener('touchend', onTouchEnd);
 
   window.addEventListener('preset:changed', () => { _needsResize = true; render(); });
 
@@ -463,4 +469,62 @@ function showZoomBadge() {
   zoomBadgeEl.classList.add('visible');
   clearTimeout(_zoomBadgeTimer);
   _zoomBadgeTimer = setTimeout(() => zoomBadgeEl.classList.remove('visible'), 1500);
+}
+
+// ─── Touch Gestures ───
+
+function onTouchStart(e) {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const t1 = e.touches[0], t2 = e.touches[1];
+    _touchState = {
+      mode: 'pinch',
+      prevDist: Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY),
+      prevZoom: state.zoom,
+    };
+  } else if (e.touches.length === 1 && state.zoom > 1) {
+    e.preventDefault();
+    const t = e.touches[0];
+    _touchState = {
+      mode: 'pan',
+      startX: t.clientX,
+      startY: t.clientY,
+      startPanX: state.panX,
+      startPanY: state.panY,
+    };
+  }
+}
+
+function onTouchMove(e) {
+  if (!_touchState) return;
+
+  if (_touchState.mode === 'pinch' && e.touches.length === 2) {
+    e.preventDefault();
+    const t1 = e.touches[0], t2 = e.touches[1];
+    const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    const scale = dist / _touchState.prevDist;
+    state.zoom = Math.max(0.25, Math.min(5, _touchState.prevZoom * scale));
+    _needsResize = true;
+    showZoomBadge();
+  } else if (_touchState.mode === 'pan' && e.touches.length === 1) {
+    e.preventDefault();
+    const t = e.touches[0];
+    state.panX = _touchState.startPanX + (t.clientX - _touchState.startX);
+    state.panY = _touchState.startPanY + (t.clientY - _touchState.startY);
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches.length === 0) {
+    _touchState = null;
+  } else if (e.touches.length === 1 && _touchState && _touchState.mode === 'pinch') {
+    const t = e.touches[0];
+    _touchState = {
+      mode: 'pan',
+      startX: t.clientX,
+      startY: t.clientY,
+      startPanX: state.panX,
+      startPanY: state.panY,
+    };
+  }
 }

@@ -20,7 +20,7 @@
   <main class="app">
 
     <!-- LEFT PANEL -->
-    <aside class="panel-left">
+    <aside class="panel-left" id="panel-left">
 
       <div class="panel-section">
         <div class="panel-title">Source</div>
@@ -130,7 +130,7 @@
     </section>
 
     <!-- RIGHT PANEL -->
-    <aside class="panel-right">
+    <aside class="panel-right" id="panel-right">
 
       <div class="panel-section">
         <div class="panel-title">Layers</div>
@@ -165,6 +165,14 @@
     <img id="preview-img" alt="Preview">
     <span id="preview-info"></span>
   </div>
+
+  <nav class="mobile-bottom-bar" id="mobile-bottom-bar">
+    <button class="tab-btn" data-panel="tools">🔧 Инструменты</button>
+    <button class="tab-btn" data-panel="props">⚙ Свойства</button>
+    <button class="tab-btn" data-panel="layers">📑 Слои</button>
+    <button class="tab-btn" data-panel="filters">🎨 Фильтры</button>
+    <button class="tab-btn" data-panel="more">⋯ Ещё</button>
+  </nav>
 
   <script type="module" src="js/app.js"></script>
 </body>
